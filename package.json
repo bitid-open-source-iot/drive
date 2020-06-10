@@ -1,0 +1,24 @@
+{
+  "name": "drive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "drive.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "connect-multiparty": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "gridfs-stream": "^1.1.1",
+    "log4js": "^6.3.0",
+    "mongodb": "^3.5.8",
+    "node-fetch": "^2.6.0",
+    "q": "^1.5.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-subset": "^1.6.0",
+    "form-data": "^3.0.0"
+  }
+}
