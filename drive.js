@@ -72,6 +72,7 @@ try {
                                 error.error.code             = 401;
                                 error.error.errors[0].code   = 401;
                                 __responder.error(req, res, error);
+                        		__logger.error(error);
                             });
                         } else {
                             next();
@@ -96,8 +97,9 @@ try {
                 server.listen(args.settings.localwebserver.port);
 
                 deferred.resolve(args);
-            } catch(e) {
-                deferred.reject(e)
+            } catch(error) {
+                deferred.reject(error);
+                __logger.error(error);
             };
 
             return deferred.promise;
