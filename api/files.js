@@ -1,4 +1,3 @@
-var grid        		= require('../db/grid');
 var express     		= require('express');
 var router      		= express.Router();
 var multipart 			= require('connect-multiparty');
@@ -10,6 +9,7 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.get('/get', (req, res) => {
+	console.log(1);
     var myModule = new bllModule.module();
 	myModule.files.get(req, res);
 });
