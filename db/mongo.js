@@ -2,6 +2,8 @@ var Q		= require('q');
 var fs		= require('fs');
 var Grid    = require('gridfs-stream');
 var mongo	= require('mongodb');
+/* The code below is to fix the Grid Cursor, see https://github.com/aheckmann/gridfs-stream/issues/125 for reference */
+eval(`Grid.prototype.findOne = ${Grid.prototype.findOne.toString().replace('nextObject', 'next')}`);
 
 exports.call = (args) => {
 	var deferred = Q.defer();
@@ -147,22 +149,18 @@ exports.call = (args) => {
 			break;
 		case('getfile'):
 			var gfs = new Grid(db, mongo);
-			console.log(4);
 			gfs.findOne(args.params, (err, file) => {
 				if (err) {
-					console.log(5.1);
 					args.res.status(401).json({
 						'code':     503,
 						'message':  'Unknown Error Occured'
 					});
 				} else if (!file) {
-					console.log(5.2);
 					args.res.status(401).json({
 						'code':     401,
 						'message':  'Invalid Credentials'
 					});
 				} else {
-					console.log(5.3);
 					args.res.setHeader('Content-Type', file.contentType);
 					var readstream = gfs.createReadStream(args.params);
 					readstream.pipe(args.res);

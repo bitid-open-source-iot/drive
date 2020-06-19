@@ -23,7 +23,6 @@ var module = function() {
 				'req': req,
 				'res': res
 			};
-			console.log(2);
 			var myModule = new dal.module();
 			myModule.files.get(args)
 		},

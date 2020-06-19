@@ -4,15 +4,16 @@ var cors        = require('cors');
 var auth        = require('./lib/auth');
 var http        = require('http');
 var chalk       = require('chalk');
-var logger      = require('./lib/logger');
 var express     = require('express');
 var responder   = require('./lib/responder');
 var bodyParser  = require('body-parser');
 
 global.__base       = __dirname + '/';
-global.__logger     = new logger.module();
+global.__logger     = require('./lib/logger');
 global.__settings   = require('./config.json');
 global.__responder  = new responder.module();
+
+__logger.init();
 
 try { 
     var portal = {
@@ -80,6 +81,7 @@ try {
 
                 var files = require('./api/files');
                 app.use('/drive/files', files);
+                __logger.info('Loaded: /drive/files');
 
                 app.use((err, req, res, next) => {
                     portal.errorResponse.error.code               = 500;
@@ -131,8 +133,10 @@ try {
             .then(portal.database, null)
             .then(args => {
                 console.log('Webserver Running on port: ', args.settings.localwebserver.port);
+                __logger.info('Webserver Running on port: ' + args.settings.localwebserver.port);
             }, err => {
                 console.log('Error Initializing: ', err);
+                __logger.error('Error Initializing: ' + err);
             });
         },
 

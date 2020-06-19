@@ -21,7 +21,6 @@ var module = function() {
 		},
 
 		get: (args) => {
-			console.log(3);
 			db.call({
 				'params': {
 					"_id": 				ObjectId(args.req.query.fileId),

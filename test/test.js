@@ -199,7 +199,7 @@ var tools = {
             get: () => {
                 var deferred = Q.defer();
 
-                tools.post('/drive/files/get', {
+                tools.get('/drive/files/get', {
                     'token':  token,
                     'fileId': fileId
                 })
@@ -326,9 +326,7 @@ var tools = {
             'method': 'GET'
         });
         
-        const result = await response.json();
-
-        deferred.resolve(result);
+        deferred.resolve(response);
         
         return deferred.promise;
     },
