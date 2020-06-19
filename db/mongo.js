@@ -231,7 +231,6 @@ exports.call = (args) => {
 				};
 			});
 			break;
-					
 		default:
 			deferred.reject({
 				'code': 		503,

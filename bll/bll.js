@@ -1,5 +1,5 @@
-var tools		= require('../lib/tools');
-var dal	= require('../dal/dal');
+var dal		= require('../dal/dal');
+var tools	= require('../lib/tools');
 
 var module = function() {
 	var bllFiles = {

@@ -1,5 +1,4 @@
 var fs        = require('fs');
-var path      = require('path');
 var Grid      = require('gridfs-stream');
 var mongo     = require('mongodb');
 var ObjectId  = require('mongodb').ObjectId;
@@ -36,9 +35,9 @@ var module = function() {
         },
         write: (req, res) => {
             mongo.MongoClient.connect(__settings.mongodb.url, (err, database) => {
-                var gfs         = new Grid(database, mongo);
+                var gfs = new Grid(database, mongo);
 
-                var metadata    = {
+                var metadata = {
                     'appId': req.query.appId,
                     'openiot': {
                         'auth': {
