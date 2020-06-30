@@ -7,6 +7,7 @@ var chalk       = require('chalk');
 var express     = require('express');
 var responder   = require('./lib/responder');
 var bodyParser  = require('body-parser');
+var healthcheck = require('@bitid/health-check');
 
 global.__base       = __dirname + '/';
 global.__logger     = require('./lib/logger');
@@ -83,6 +84,9 @@ try {
                 var files = require('./api/files');
                 app.use('/drive/files', files);
                 __logger.info('Loaded: /drive/files');
+
+                app.use('/health-check', healthcheck);
+                __logger.info('Loaded: /health-check');
 
                 app.use((err, req, res, next) => {
                     portal.errorResponse.error.code               = 500;
