@@ -11,7 +11,7 @@ var module = function() {
 					"code":    		401,
 					"reason": 		"General Files Error",
 					"message": 		"Files Error",
-					"locaction": 	"bllFiles",
+					"location": 	"bllFiles",
 					"locationType": "body"
 				}]
 			},

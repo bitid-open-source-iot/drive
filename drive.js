@@ -26,7 +26,7 @@ try {
                     "code":         401,
                     "reason":       "Drive Error",
                     "message":      "Invalid Credentials",
-                    "locaction":    "portal",
+                    "location":    "portal",
                     "locationType": "header"
                 }]
             },

@@ -13,7 +13,7 @@ var module = function() {
 					"code": 		503,
 					"reason": 		"General Error",
 					"message": 		"General Error",
-					"locaction": 	"dalFiles",
+					"location": 	"dalFiles",
 					"locationType": "header"
 				}]
 			},
