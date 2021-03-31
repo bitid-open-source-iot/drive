@@ -1,27 +1,21 @@
 {
-    "production":       false,
-    "authentication":   false,
+    "limit": 50,
+    "production": false,
+    "authentication": false,
     "auth": {
-        "host":     "http://127.0.0.1:9000/auth/auth",
-        "token":    "xxx",
-        "email":    "xxx@xxx.co.za",
-        "appId":    "xxx"
-    },
-    "localwebserver": {
-        "port": 12000
-    },
-    "mongodb": {
-        "url":      "xxx",
-        "database": "xxx"
+        "host": "http://127.0.0.1:9000",
+        "token": "xxx",
+        "email": "xxx@xxx.co.za",
+        "appId": "xxx"
     },
     "logger": {
         "appenders": {
             "drive": {
-                "type":         "file",
-                "backups":      10,
-                "filename":     "./logs/drive.log",
-                "absolute":     true,
-                "maxLogSize":   102400
+                "type": "file",
+                "backups": 10,
+                "filename": "./logs/drive.log",
+                "absolute": true,
+                "maxLogSize": 102400
             }
         },
         "categories": {
@@ -32,5 +26,12 @@
                 "level": "error"
             }
         }
+    },
+    "mongodb": {
+        "url": "xxx",
+        "database": "xxx"
+    },
+    "localwebserver": {
+        "port": 12000
     }
 }

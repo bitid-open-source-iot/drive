@@ -1,46 +1,33 @@
-var Q       	= require('q');
-var db			= require('../db/mongo');
-var tools 		= require('../lib/tools');
-var ObjectId	= require('mongodb').ObjectId;
+const Q = require('q');
+const db = require('../db/mongo');
+const tools = require('../lib/tools');
+const format = require('../lib/format');
+const ObjectId = require('mongodb').ObjectId;
+const ErrorResponse = require('../lib/error-response');
 
-var module = function() {
+var module = function () {
 	var dalFiles = {
-		errorResponse: {
-			"error": {
-				"code": 	401,
-				"message": 	"Invalid Credentials",
-				"errors": [{
-					"code": 		503,
-					"reason": 		"General Error",
-					"message": 		"General Error",
-					"location": 	"dalFiles",
-					"locationType": "header"
-				}]
-			},
-			"hiddenErrors": []
-		},
-
 		get: (args) => {
 			db.call({
 				'params': {
-					"_id": 				ObjectId(args.req.query.fileId),
-					"metadata.token": 	args.req.query.token
+					'_id': ObjectId(args.req.query.fileId),
+					'metadata.token': args.req.query.token
 				},
-				'res': 			args.res,
-				'operation': 	'getfile',
-				'collection': 	'fs.files'
+				'res': args.res,
+				'operation': 'getfile',
+				'collection': 'fs.files'
 			});
 		},
 
 		list: (args) => {
 			var deferred = Q.defer();
-			
+
 			var params = {
-				"metadata.bitid.auth.users.email": args.req.body.header.email
+				'metadata.bitid.auth.users.email': format.email(args.req.body.header.email)
 			};
 
 			var filter = {};
-			if (typeof(args.req.body.filter) != "undefined") {
+			if (typeof (args.req.body.filter) != 'undefined') {
 				filter._id = 0;
 				args.req.body.filter.map(f => {
 					if (f == 'fileId') {
@@ -64,19 +51,20 @@ var module = function() {
 			};
 
 			db.call({
-				'params': 		params,
-				'filter': 		filter,
-				'operation': 	'find',
-				'collection': 	'fs.files'
+				'params': params,
+				'filter': filter,
+				'operation': 'find',
+				'collection': 'fs.files'
 			})
-			.then(result => {
-				args.result = result;
-				deferred.resolve(args);
-			}, err => {
-				dalFiles.errorResponse.error.errors[0].code 	= err.code 			|| dalFiles.errorResponse.error.errors[0].code;
-				dalFiles.errorResponse.error.errors[0].reason 	= err.description 	|| 'List Files Error';
-				deferred.reject(dalFiles.errorResponse);
-			});
+				.then(result => {
+					args.result = result;
+					deferred.resolve(args);
+				}, error => {
+					var err = new ErrorResponse()
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.description;
+					deferred.reject(err);
+				});
 
 			return deferred.promise;
 		},
@@ -85,45 +73,46 @@ var module = function() {
 			var deferred = Q.defer();
 
 			var params = {
-			    "metadata.bitid.auth.users.email": {
-			    	$ne: args.req.body.email
-		    	},
-			    "metadata.bitid.auth.users": {
-			        $elemMatch: {
-			            "role": {
-			                $gte: 4
-			            },
-			            "email": args.req.body.header.email
-			        }
-			    },
-			    "_id": ObjectId(args.req.body.fileId)
+				'metadata.bitid.auth.users.email': {
+					$ne: format.email(args.req.body.email)
+				},
+				'metadata.bitid.auth.users': {
+					$elemMatch: {
+						'role': {
+							$gte: 4
+						},
+						'email': format.email(args.req.body.header.email)
+					}
+				},
+				'_id': ObjectId(args.req.body.fileId)
 			};
 			var update = {
 				$set: {
-					"metadata.serverDate": 	new Date()
+					'metadata.serverDate': new Date()
 				},
 				$push: {
-					"metadata.bitid.auth.users": {
-				        "role": 	args.req.body.role,
-				        "email":	args.req.body.email
-				    }
+					'metadata.bitid.auth.users': {
+						'role': args.req.body.role,
+						'email': format.email(args.req.body.email)
+					}
 				}
 			};
 
 			db.call({
-				'params': 		params,
-				'update': 		update,
-				'operation': 	'update',
-				'collection': 	'fs.files'
+				'params': params,
+				'update': update,
+				'operation': 'update',
+				'collection': 'fs.files'
 			})
-			.then(result => {
-				args.result = result;
-				deferred.resolve(args);
-			}, err => {
-				dalFiles.errorResponse.error.errors[0].code   = err.code 			|| dalFiles.errorResponse.error.errors[0].code;
-				dalFiles.errorResponse.error.errors[0].reason = err.description 	|| 'Share User To Report Error';
-				deferred.reject(dalFiles.errorResponse);
-			});
+				.then(result => {
+					args.result = result;
+					deferred.resolve(args);
+				}, error => {
+					var err = new ErrorResponse()
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.description;
+					deferred.reject(err);
+				});
 
 			return deferred.promise;
 		},
@@ -131,38 +120,39 @@ var module = function() {
 		upload: (args) => {
 			var deferred = Q.defer();
 
-			var file = args.req.files.uploads[0];
+			var file = args.req.files['uploads[]'];
 			var update = {
 				'metadata.bitid': {
 					'auth': {
 						'users': [
 							{
-								'role':  5,
-								'email': args.req.query.email
+								'role': 5,
+								'email': format.email(args.req.query.email)
 							}
 						],
 						'organizationOnly': 0
 					}
 				},
-				'metadata.appId':		args.req.query.appId,
-				'metadata.token':		tools.generateToken(32),
-				'metadata.serverDate': 	new Date()
+				'metadata.appId': args.req.query.appId,
+				'metadata.token': tools.generateToken(32),
+				'metadata.serverDate': new Date()
 			};
 
 			db.call({
-				'file': 		file,
-				'update':		update,
-				'operation':	'upload',
-				'collection':	'fs.files'
+				'file': file,
+				'update': update,
+				'operation': 'upload',
+				'collection': 'fs.files'
 			})
-			.then(result => {
-				args.result = result;
-				deferred.resolve(args);
-			}, err => {
-				dalFiles.errorResponse.error.errors[0].code   = err.code 			|| dalFiles.errorResponse.error.errors[0].code;
-				dalFiles.errorResponse.error.errors[0].reason = err.description 	|| 'Upload File Error';
-				deferred.reject(dalFiles.errorResponse);
-			});
+				.then(result => {
+					args.result = result;
+					deferred.resolve(args);
+				}, error => {
+					var err = new ErrorResponse()
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.description;
+					deferred.reject(err);
+				});
 
 			return deferred.promise;
 		},
@@ -171,74 +161,76 @@ var module = function() {
 			var deferred = Q.defer();
 
 			var params = {
-				"metadata.bitid.auth.users": {
-			        $elemMatch: {
-			            "role": {
-			                $gte: 2
-			            },
-			            "email": args.req.body.header.email
-			        }
-			    },
-				"_id": ObjectId(args.req.body.fileId)
+				'metadata.bitid.auth.users': {
+					$elemMatch: {
+						'role': {
+							$gte: 2
+						},
+						'email': format.email(args.req.body.header.email)
+					}
+				},
+				'_id': ObjectId(args.req.body.fileId)
 			};
 			var update = {
 				$set: {
-					"metadata.serverDate": new Date()
+					'metadata.serverDate': new Date()
 				}
 			};
-			if (typeof(args.req.body.description) != "undefined") {
-				update.$set["metadata.description"] = args.req.body.description;
+			if (typeof (args.req.body.description) != 'undefined') {
+				update.$set['metadata.description'] = args.req.body.description;
 			};
-			if (typeof(args.req.body.organizationOnly) != "undefined") {
-				update.$set["bitid.auth.organizationOnly"] = args.req.body.organizationOnly;
+			if (typeof (args.req.body.organizationOnly) != 'undefined') {
+				update.$set['bitid.auth.organizationOnly'] = args.req.body.organizationOnly;
 			};
 
 			db.call({
-				'params': 		params,
-				'update': 		update,
-				'operation': 	'update',
-				'collection': 	'fs.files'
+				'params': params,
+				'update': update,
+				'operation': 'update',
+				'collection': 'fs.files'
 			})
-			.then(result => {
-				args.result = result;
-				deferred.resolve(args);
-			}, err => {
-				dalFiles.errorResponse.error.errors[0].code   = err.code 			|| dalFiles.errorResponse.error.errors[0].code;
-				dalFiles.errorResponse.error.errors[0].reason = err.description 	|| 'Update File Error';
-				deferred.reject(dalFiles.errorResponse);
-			});
+				.then(result => {
+					args.result = result;
+					deferred.resolve(args);
+				}, error => {
+					var err = new ErrorResponse()
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.description;
+					deferred.reject(err);
+				});
 
 			return deferred.promise;
 		},
 
 		delete: (args) => {
 			var deferred = Q.defer();
-			
+
 			var params = {
-				"metadata.bitid.auth.users": {
-			        $elemMatch: {
-			            "role": {
-			                $gte: 5
-			            },
-			            "email": args.req.body.header.email
-			        }
-			    },
-				"_id": ObjectId(args.req.body.fileId)
+				'metadata.bitid.auth.users': {
+					$elemMatch: {
+						'role': {
+							$gte: 5
+						},
+						'email': format.email(args.req.body.header.email)
+					}
+				},
+				'_id': ObjectId(args.req.body.fileId)
 			};
 
 			db.call({
-				'params': 		params,
-				'operation': 	'remove',
-				'collection': 	'fs.files'
+				'params': params,
+				'operation': 'remove',
+				'collection': 'fs.files'
 			})
-			.then(result => {
-				args.result = result;
-				deferred.resolve(args);
-			}, err => {
-				dalFiles.errorResponse.error.errors[0].code   = err.code 			|| dalFiles.errorResponse.error.errors[0].code;
-				dalFiles.errorResponse.error.errors[0].reason = err.description 	|| 'Delete File Error';
-				deferred.reject(dalFiles.errorResponse);
-			});
+				.then(result => {
+					args.result = result;
+					deferred.resolve(args);
+				}, error => {
+					var err = new ErrorResponse()
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.description;
+					deferred.reject(err);
+				});
 
 			return deferred.promise;
 		},
@@ -247,107 +239,109 @@ var module = function() {
 			var deferred = Q.defer();
 
 			var params = {
-				"metadata.bitid.auth.users": {
-			        $elemMatch: {
-			            "role": {
-			                $gte: 4
-			            },
-			            "email": args.req.body.header.email
-			        }
-			    },
-			    "_id": ObjectId(args.req.body.fileId)
+				'metadata.bitid.auth.users': {
+					$elemMatch: {
+						'role': {
+							$gte: 4
+						},
+						'email': format.email(args.req.body.header.email)
+					}
+				},
+				'_id': ObjectId(args.req.body.fileId)
 			};
 			var update = {
 				$set: {
-					"metadata.serverDate": 	new Date()
+					'metadata.serverDate': new Date()
 				},
 				$pull: {
-					"metadata.bitid.auth.users": {
-				        "email": args.req.body.email
-				    }
+					'metadata.bitid.auth.users': {
+						'email': format.email(args.req.body.email)
+					}
 				}
 			};
 
 			db.call({
-				'params': 		params,
-				'update': 		update,
-				'operation': 	'update',
-				'collection': 	'fs.files'
+				'params': params,
+				'update': update,
+				'operation': 'update',
+				'collection': 'fs.files'
 			})
-			.then(result => {
-				args.result = result;
-				deferred.resolve(args);
-			}, err => {
-				dalFiles.errorResponse.error.errors[0].code   = err.code 			|| dalFiles.errorResponse.error.errors[0].code;
-				dalFiles.errorResponse.error.errors[0].reason = err.description 	|| 'Unsubscribe Users From A File Error';
-				deferred.reject(dalFiles.errorResponse);
-			});
+				.then(result => {
+					args.result = result;
+					deferred.resolve(args);
+				}, error => {
+					var err = new ErrorResponse()
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.description;
+					deferred.reject(err);
+				});
 
 			return deferred.promise;
 		},
 
 		updatesubscriber: (args) => {
 			var deferred = Q.defer();
-			
+
 			var params = {
-				"metadata.bitid.auth.users": {
-			        $elemMatch: {
-			            "role": {
-			                $gte: 4
-			            },    
-			            "email": args.req.body.header.email   
-			        }
-			    },
-				"_id": ObjectId(args.req.body.fileId)	
-			};
-			
-			db.call({
-				'params': 		params,
-				'operation': 	'find',
-				'collection': 	'fs.files'
-			})
-			.then(result => {
-				var deferred = Q.defer();
-
-				var params = {
-					"metadata.bitid.auth.users": {
-				        $elemMatch: {
-				            "email": args.req.body.email    
-				        }
-				    },
-					"_id": ObjectId(args.req.body.fileId)	
-				};
-				var update = {
-					$set: {
-			            "metadata.bitid.auth.users.$.role": args.req.body.role
+				'metadata.bitid.auth.users': {
+					$elemMatch: {
+						'role': {
+							$gte: 4
+						},
+						'email': format.email(args.req.body.header.email)
 					}
-				};
+				},
+				'_id': ObjectId(args.req.body.fileId)
+			};
 
-				deferred.resolve({
-					'params': 		params,
-					'update': 		update,
-					'operation': 	'update',
-					'collection': 	'fs.files'
+			db.call({
+				'params': params,
+				'operation': 'find',
+				'collection': 'fs.files'
+			})
+				.then(result => {
+					var deferred = Q.defer();
+
+					var params = {
+						'metadata.bitid.auth.users': {
+							$elemMatch: {
+								'email': format.email(args.req.body.email)
+							}
+						},
+						'_id': ObjectId(args.req.body.fileId)
+					};
+					var update = {
+						$set: {
+							'metadata.bitid.auth.users.$.role': args.req.body.role
+						}
+					};
+
+					deferred.resolve({
+						'params': params,
+						'update': update,
+						'operation': 'update',
+						'collection': 'fs.files'
+					});
+
+					return deferred.promise;
+				}, null)
+				.then(db.call, null)
+				.then(result => {
+					args.result = result;
+					deferred.resolve(args);
+				}, error => {
+					var err = new ErrorResponse()
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.description;
+					deferred.reject(err);
 				});
-
-				return deferred.promise;
-			}, null)
-			.then(db.call, null)
-			.then(result => {
-				args.result = result;
-				deferred.resolve(args);
-			}, err => {
-				dalFiles.errorResponse.error.errors[0].code 	= err.code 			|| dalFiles.errorResponse.error.errors[0].code;
-				dalFiles.errorResponse.error.errors[0].reason 	= err.description 	|| 'Update File Subscriber Error';
-				deferred.reject(dalFiles.errorResponse);
-			});
 
 			return deferred.promise;
 		}
 	};
 
 	return {
-		"files": dalFiles
+		'files': dalFiles
 	};
 };
 

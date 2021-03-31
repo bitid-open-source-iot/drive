@@ -1,13 +1,12 @@
-var bll			= require('../bll/bll');
-var router		= require('express').Router();
-var multipart	= require('connect-multiparty')();
+const bll = require('../bll/bll');
+const router = require('express').Router();
 
 router.use(function timeLog(req, res, next) {
-  	next();
+	next();
 });
 
 router.get('/get', (req, res) => {
-    var myModule = new bll.module();
+	var myModule = new bll.module();
 	myModule.files.get(req, res);
 });
 
@@ -21,8 +20,8 @@ router.post('/share', (req, res) => {
 	myModule.files.share(req, res);
 });
 
-router.post('/upload', multipart, (req, res) => {
-    var myModule = new bll.module();
+router.post('/upload', (req, res) => {
+	var myModule = new bll.module();
 	myModule.files.upload(req, res);
 });
 
