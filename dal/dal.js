@@ -223,7 +223,24 @@ var module = function () {
 				'collection': 'fs.files'
 			})
 				.then(result => {
+					var deferred = Q.defer();
+
 					args.result = result;
+
+					var params = {
+						'files_id': ObjectId(args.req.body.fileId)
+					}
+
+					deferred.resolve({
+						'params': params,
+						'operation': 'remove',
+						'collection': 'fs.chunks'
+					});
+
+					return deferred.promise;
+				}, null)
+				.then(db.call, null)
+				.then(result => {
 					deferred.resolve(args);
 				}, error => {
 					var err = new ErrorResponse()
