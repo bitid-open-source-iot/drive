@@ -162,6 +162,7 @@ exports.call = (args) => {
 					});
 				} else {
 					args.res.setHeader('Content-Type', file.contentType);
+					args.res.setHeader('Content-Disposition', 'attachment;filename*=UTF-8\'\'' + file.filename);
 					var readstream = gfs.createReadStream(args.params);
 					readstream.pipe(args.res);
 				};
