@@ -1,5 +1,5 @@
 const Q = require('q');
-const db = require('./db/mongo');
+const db = require('./db/sql');
 const cors = require('cors');
 const auth = require('./lib/auth');
 const http = require('http');

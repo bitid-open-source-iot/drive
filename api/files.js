@@ -1,7 +1,7 @@
 const bll = require('../bll/bll');
 const router = require('express').Router();
 
-router.use(function timeLog(req, res, next) {
+router.use((req, res, next) => {
 	next();
 });
 
@@ -40,7 +40,12 @@ router.post('/unsubscribe', (req, res) => {
 	myModule.files.unsubscribe(req, res);
 });
 
-router.post('/updatesubscriber', (req, res) => {
+router.post('/change-owner', (req, res) => {
+	var myModule = new bll.module();
+	myModule.files.changeowner(req, res);
+});
+
+router.post('/update-subscriber', (req, res) => {
 	var myModule = new bll.module();
 	myModule.files.updatesubscriber(req, res);
 });
