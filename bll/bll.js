@@ -67,7 +67,7 @@ var module = function () {
 			};
 
 			var myModule = new dal.module();
-			myModule.files.upload(args)
+			myModule.files.add(args)
 				.then(args => {
 					__responder.success(req, res, args.result);
 				}, err => {

@@ -7,43 +7,76 @@ const ErrorResponse = require('../lib/error-response');
 
 var module = function () {
 	var dalFiles = {
-		add: (args) => {
-			var deferred = Q.defer();
+        add: (args) => {
+            var deferred = Q.defer();
 
-			const request = new sql.Request(__database);
+            var err = new ErrorResponse();
+            const transaction = new sql.Transaction(__database);
 
-			request.input('name', args.req.body.name);
-			request.input('data', args.req.body.data);
-			request.input('size', args.req.body.size);
-			request.input('appId', args.req.body.appId);
-			request.input('token', args.req.body.token);
-			request.input('userId', args.req.body.header.userId);
-			request.input('mimetype', args.req.body.mimetype);
-			request.input('organizationOnly', args.req.body.organizationOnly);
+            transaction.on('commit', result => {
+                deferred.resolve(args);
+            });
 
-			request.execute('v1_Files_Add')
-				.then(result => {
-					if (result.returnValue == 1 && result.recordset.length > 0) {
-						args.result = result.recordset[0];
-						deferred.resolve(args);
-					} else {
-						var err = new ErrorResponse();
-						err.error.errors[0].code = result.recordset[0].code;
-						err.error.errors[0].reason = result.recordset[0].message;
-						err.error.errors[0].message = result.recordset[0].message;
-						deferred.reject(err);
-					}
-				})
-				.catch(error => {
-					var err = new ErrorResponse();
-					err.error.errors[0].code = error.code;
-					err.error.errors[0].reason = error.message;
-					err.error.errors[0].message = error.message;
-					deferred.reject(err);
-				});
+            transaction.on('rollback', aborted => {
+                deferred.reject(err);
+            });
 
-			return deferred.promise;
-		},
+            transaction.begin()
+                .then(res => new sql.Request(transaction)
+					.input('name', args.req.body.name)
+					.input('data', args.req.body.data)
+					.input('size', args.req.body.size)
+					.input('appId', args.req.body.appId)
+					.input('token', args.req.body.token)
+					.input('userId', args.req.body.header.userId)
+					.input('mimetype', args.req.body.mimetype)
+					.input('organizationOnly', args.req.body.organizationOnly || 0)
+					.execute('v1_Files_Add'), null)
+                .then(result => {
+                    var deferred = Q.defer();
+
+                    if (result.returnValue == 1 && result.recordset.length > 0) {
+                        args.result = result.recordset[0];
+                        deferred.resolve(args);
+                    } else {
+                        err.error.errors[0].code = result.recordset[0].code;
+                        err.error.errors[0].reason = result.recordset[0].message;
+                        err.error.errors[0].message = result.recordset[0].message;
+                        deferred.reject(err);
+                    };
+
+                    return deferred.promise;
+                }, null)
+				.then(res => args.req.body.users.reduce((promise, user) => promise.then(() => new sql.Request(transaction)
+					.input('role', user.role)
+					.input('appId', args.result._id)
+					.input('userId', user.userId)
+					.execute('v1_Apps_Add_User')
+				), Promise.resolve()))
+                .then(result => {
+                    var deferred = Q.defer();
+
+                    if (result.returnValue == 1 && result.recordset.length > 0) {
+                        args.result = result.recordset[0];
+                        deferred.resolve(args);
+                    } else {
+                        err.error.errors[0].code = result.recordset[0].code;
+                        err.error.errors[0].reason = result.recordset[0].message;
+                        err.error.errors[0].message = result.recordset[0].message;
+                        deferred.reject(err);
+                    };
+
+                    return deferred.promise;
+                }, null)
+                .then(res => {
+                    transaction.commit();
+                })
+                .catch(err => {
+                    transaction.rollback();
+                })
+
+            return deferred.promise;
+        },
 
 		get: (args) => {
 			var deferred = Q.defer();
