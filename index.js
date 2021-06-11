@@ -38,7 +38,8 @@ try {
                         fileSize: __settings.limit * 1024 * 1024
                     },
                     tempFileDir: __base + 'tmp/',
-                    useTempFiles: true
+                    useTempFiles: true,
+                    abortOnLimit: true
                 }));
 
                 if (args.settings.authentication) {
