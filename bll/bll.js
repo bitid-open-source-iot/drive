@@ -21,12 +21,22 @@ var module = function () {
 		},
 
 		get: (req, res) => {
+			req.originalUrl = req.originalUrl.split('?')[0];
+
 			var args = {
 				'req': req,
 				'res': res
 			};
+
+			args.req.body = args.req.query;
+
 			var myModule = new dal.module();
 			myModule.files.get(args)
+				.then(args => {
+					__responder.success(req, res, args.result);
+				}, err => {
+					__responder.error(req, res, err);
+				});
 		},
 
 		list: (req, res) => {

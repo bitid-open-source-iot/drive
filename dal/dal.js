@@ -1,9 +1,8 @@
 const Q = require('q');
+const fs = require('fs');
 const _ = require('lodash');
 const sql = require('mssql');
 const tools = require('../lib/tools');
-const unwind = require('../lib/unwind');
-const project = require('../lib/project');
 const ErrorResponse = require('../lib/error-response');
 
 var module = function () {
@@ -16,30 +15,34 @@ var module = function () {
 			request.input('name', args.req.files['uploads[]'].name)
 			request.input('data', args.req.files['uploads[]'].data)
 			request.input('size', args.req.files['uploads[]'].size)
-			request.input('appId', parseInt(args.req.query.appId))
+			request.input('appId', args.req.query.appId)
 			request.input('token', tools.generateToken(32))
-			request.input('userId', parseInt(args.req.query.userId))
+			request.input('userId', args.req.query.userId)
 			request.input('mimetype', args.req.files['uploads[]'].mimetype)
 			request.input('organizationOnly', args.req.query.organizationOnly || 0)
 
 			request.execute('v1_Files_Add')
 				.then(result => {
-					if (result.returnValue == 1 && result.recordset.length > 0) {
-						args.result = result.recordset[0];
-						deferred.resolve(args);
-					} else {
-						var err = new ErrorResponse();
-						err.error.errors[0].code = result.recordset[0].code;
-						err.error.errors[0].reason = result.recordset[0].message;
-						err.error.errors[0].message = result.recordset[0].message;
-						deferred.reject(err);
-					};
+					fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
+						if (result.returnValue == 1 && result.recordset.length > 0) {
+							args.result = result.recordset[0];
+							deferred.resolve(args);
+						} else {
+							var err = new ErrorResponse();
+							err.error.errors[0].code = result.recordset[0].code;
+							err.error.errors[0].reason = result.recordset[0].message;
+							err.error.errors[0].message = result.recordset[0].message;
+							deferred.reject(err);
+						};
+					});
 				}, error => {
-					var err = new ErrorResponse();
-					err.error.errors[0].code = 503;
-					err.error.errors[0].reason = error.message;
-					err.error.errors[0].message = error.message;
-					deferred.reject(err);
+					fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = 503;
+						err.error.errors[0].reason = error.message;
+						err.error.errors[0].message = error.message;
+						deferred.reject(err);
+					});
 				});
 
 			return deferred.promise;
@@ -48,50 +51,15 @@ var module = function () {
 		get: (args) => {
 			var deferred = Q.defer();
 
-			var filter = {};
-			if (Array.isArray(args.req.body.filter) && args.req.body.filter.length > 0) {
-				filter['id'] = 0;
-				args.req.body.filter.map(f => {
-					if (f == 'fileId') {
-						filter['id'] = 1;
-					} else {
-						filter[f] = 1;
-					};
-				});
-			};
-
 			const request = new sql.Request(__database);
 
 			request.input('token', args.req.body.token);
 			request.input('fileId', args.req.body.fileId);
-			request.input('userId', args.req.body.header.userId);
 
 			request.execute('v1_Files_Get')
 				.then(result => {
 					if (result.returnValue == 1 && result.recordset.length > 0) {
-						result = result.recordset.map(o => unwind(o));
-						args.result = {
-							bitid: {
-								auth: {
-									users: _.uniqBy(result, 'id').map(o => {
-										return {
-											role: o.role,
-											userId: o.userId
-										}
-									}),
-									organizationOnly: new Boolean(result[0].organizationOnly)
-								}
-							},
-							name: result[0].name,
-							data: result[0].data,
-							size: result[0].size,
-							appId: result[0].appId,
-							token: result[0].token,
-							userId: result[0].userId,
-							mimetype: result[0].mimetype,
-							serverDate: result[0].serverDate
-						};
-						args.result = project(args.result, filter);
+						args.result = result.recordset[0];
 						deferred.resolve(args);
 					} else {
 						var err = new ErrorResponse();
@@ -213,13 +181,9 @@ var module = function () {
 			const request = new sql.Request(__database);
 
 			request.input('name', args.req.body.name);
-			request.input('data', args.req.body.data);
-			request.input('size', args.req.body.size);
 			request.input('appId', args.req.body.appId);
-			request.input('token', args.req.body.token);
 			request.input('fileId', args.req.body.fileId);
 			request.input('userId', args.req.body.header.userId);
-			request.input('mimetype', args.req.body.mimetype);
 			request.input('organizationOnly', args.req.body.organizationOnly);
 
 			request.execute('v1_Files_Update')
@@ -349,6 +313,7 @@ var module = function () {
 
 			const request = new sql.Request(__database);
 
+			request.input('role', args.req.body.role);
 			request.input('fileId', args.req.body.fileId);
 			request.input('userId', args.req.body.userId);
 			request.input('adminId', args.req.body.header.userId);

@@ -88,26 +88,26 @@ describe('Files', function () {
             });
     });
 
-    // it('/drive/files/update', function (done) {
-    //     this.timeout(5000);
+    it('/drive/files/update', function (done) {
+        this.timeout(5000);
 
-    //     tools.api.files.update()
-    //         .then((result) => {
-    //             try {
-    //                 result.should.have.property('updated');
-    //                 expect(result.updated).to.equal(1);
-    //                 done();
-    //             } catch (e) {
-    //                 done(e);
-    //             };
-    //         }, (err) => {
-    //             try {
-    //                 done(err);
-    //             } catch (e) {
-    //                 done(e);
-    //             };
-    //         });
-    // });
+        tools.api.files.update()
+            .then((result) => {
+                try {
+                    result.should.have.property('updated');
+                    expect(result.updated).to.be.above(0);
+                    done();
+                } catch (e) {
+                    done(e);
+                };
+            }, (err) => {
+                try {
+                    done(err);
+                } catch (e) {
+                    done(e);
+                };
+            });
+    });
 
     it('/drive/files/share', function (done) {
         this.timeout(5000);
@@ -152,7 +152,7 @@ describe('Files', function () {
     });
 
     it('/drive/files/unsubscribe', function (done) {
-        this.timeout(5000);
+        this.timeout(50005000500050005000);
 
         tools.api.files.unsubscribe()
             .then((result) => {
@@ -179,7 +179,7 @@ describe('Files', function () {
             .then((result) => {
                 try {
                     result.should.have.property('deleted');
-                    expect(result.deleted).to.equal(1);
+                    expect(result.deleted).to.be.above(0);
                     done();
                 } catch (e) {
                     done(e);
@@ -272,56 +272,33 @@ var tools = {
             },
             update: () => {
                 return tools.post('/drive/files/update', {
-                    'fileId': fileId,
-                    'description': 'Mocha Test Report Updated'
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                    'name': 'tested.txt',
+                    'fileId': fileId
+                });
             },
             delete: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/delete', {
+                return tools.post('/drive/files/delete', {
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             unsubscribe: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/unsubscribe', {
+                return tools.post('/drive/files/unsubscribe', {
                     'userId': 0,
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             changeowner: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/change-owner', {
+                return tools.post('/drive/files/change-owner', {
                     'userId': 0,
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             updatesubscriber: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/update-subscriber', {
+                return tools.post('/drive/files/update-subscriber', {
                     'role': 2,
-                    'email': 'shared@email.com',
+                    'userId': 0,
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             }
         },
         healthcheck: () => {
@@ -334,7 +311,7 @@ var tools = {
         let params = [];
 
         Object.keys(payload).map(key => {
-            if (typeof (payload[key]) == 'string') {
+            if (typeof (payload[key]) == 'string' || typeof (payload[key]) == 'number') {
                 params.push(key + '=' + payload[key]);
             };
         });
@@ -348,7 +325,9 @@ var tools = {
             'method': 'GET'
         });
 
-        deferred.resolve(response);
+        const result = await response.blob();
+
+        deferred.resolve(result);
 
         return deferred.promise;
     },
