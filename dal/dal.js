@@ -1,82 +1,49 @@
 const Q = require('q');
 const _ = require('lodash');
 const sql = require('mssql');
+const tools = require('../lib/tools');
 const unwind = require('../lib/unwind');
 const project = require('../lib/project');
 const ErrorResponse = require('../lib/error-response');
 
 var module = function () {
 	var dalFiles = {
-        add: (args) => {
-            var deferred = Q.defer();
+		add: (args) => {
+			var deferred = Q.defer();
 
-            var err = new ErrorResponse();
-            const transaction = new sql.Transaction(__database);
+			const request = new sql.Request(__database);
 
-            transaction.on('commit', result => {
-                deferred.resolve(args);
-            });
+			request.input('name', args.req.files['uploads[]'].name)
+			request.input('data', args.req.files['uploads[]'].data)
+			request.input('size', args.req.files['uploads[]'].size)
+			request.input('appId', parseInt(args.req.query.appId))
+			request.input('token', tools.generateToken(32))
+			request.input('userId', parseInt(args.req.query.userId))
+			request.input('mimetype', args.req.files['uploads[]'].mimetype)
+			request.input('organizationOnly', args.req.query.organizationOnly || 0)
 
-            transaction.on('rollback', aborted => {
-                deferred.reject(err);
-            });
+			request.execute('v1_Files_Add')
+				.then(result => {
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset[0];
+						deferred.resolve(args);
+					} else {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					};
+				}, error => {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = 503;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				});
 
-            transaction.begin()
-                .then(res => new sql.Request(transaction)
-					.input('name', args.req.body.name)
-					.input('data', args.req.body.data)
-					.input('size', args.req.body.size)
-					.input('appId', args.req.body.appId)
-					.input('token', args.req.body.token)
-					.input('userId', args.req.body.header.userId)
-					.input('mimetype', args.req.body.mimetype)
-					.input('organizationOnly', args.req.body.organizationOnly || 0)
-					.execute('v1_Files_Add'), null)
-                .then(result => {
-                    var deferred = Q.defer();
-
-                    if (result.returnValue == 1 && result.recordset.length > 0) {
-                        args.result = result.recordset[0];
-                        deferred.resolve(args);
-                    } else {
-                        err.error.errors[0].code = result.recordset[0].code;
-                        err.error.errors[0].reason = result.recordset[0].message;
-                        err.error.errors[0].message = result.recordset[0].message;
-                        deferred.reject(err);
-                    };
-
-                    return deferred.promise;
-                }, null)
-				.then(res => args.req.body.users.reduce((promise, user) => promise.then(() => new sql.Request(transaction)
-					.input('role', user.role)
-					.input('appId', args.result._id)
-					.input('userId', user.userId)
-					.execute('v1_Apps_Add_User')
-				), Promise.resolve()))
-                .then(result => {
-                    var deferred = Q.defer();
-
-                    if (result.returnValue == 1 && result.recordset.length > 0) {
-                        args.result = result.recordset[0];
-                        deferred.resolve(args);
-                    } else {
-                        err.error.errors[0].code = result.recordset[0].code;
-                        err.error.errors[0].reason = result.recordset[0].message;
-                        err.error.errors[0].message = result.recordset[0].message;
-                        deferred.reject(err);
-                    };
-
-                    return deferred.promise;
-                }, null)
-                .then(res => {
-                    transaction.commit();
-                })
-                .catch(err => {
-                    transaction.rollback();
-                })
-
-            return deferred.promise;
-        },
+			return deferred.promise;
+		},
 
 		get: (args) => {
 			var deferred = Q.defer();
@@ -167,7 +134,59 @@ var module = function () {
 			request.execute('v1_Files_List')
 				.then(result => {
 					if (result.returnValue == 1 && result.recordset.length > 0) {
-						args.result = result.recordset.map(o => project(unwind(o), filter));
+						args.result = _.chain(result.recordset).groupBy('id').map((file, key) => {
+							return {
+								bitid: {
+									auth: {
+										users: _.uniqBy(file.map(o => ({ role: o.role, userId: o.userId })), 'userId'),
+										organizationOnly: file[0].organizationOnly
+									}
+								},
+								id: file[0].id,
+								name: file[0].name,
+								data: file[0].data,
+								role: file[0].role,
+								size: file[0].size,
+								token: file[0].token,
+								appId: file[0].appId,
+								mimetype: file[0].mimetype,
+								serverDate: file[0].serverDate
+							}
+						}).value();
+						deferred.resolve(args);
+					} else {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					}
+				})
+				.catch(error => {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				});
+
+			return deferred.promise;
+		},
+
+		share: (args) => {
+			var deferred = Q.defer();
+
+			const request = new sql.Request(__database);
+
+			request.input('role', args.req.body.role);
+			request.input('fileId', args.req.body.fileId);
+			request.input('userId', args.req.body.userId);
+			request.input('adminId', args.req.body.header.userId);
+
+			request.execute('v1_Files_Share')
+				.then(result => {
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset[0];
 						deferred.resolve(args);
 					} else {
 						var err = new ErrorResponse();
@@ -236,6 +255,105 @@ var module = function () {
 			request.input('userId', args.req.body.header.userId);
 
 			request.execute('v1_Files_Delete')
+				.then(result => {
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset[0];
+						deferred.resolve(args);
+					} else {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					}
+				})
+				.catch(error => {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				});
+
+			return deferred.promise;
+		},
+
+		unsubscribe: (args) => {
+			var deferred = Q.defer();
+
+			const request = new sql.Request(__database);
+
+			request.input('fileId', args.req.body.fileId);
+			request.input('userId', args.req.body.userId);
+			request.input('adminId', args.req.body.header.userId);
+
+			request.execute('v1_Files_Unsubscribe')
+				.then(result => {
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset[0];
+						deferred.resolve(args);
+					} else {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					}
+				})
+				.catch(error => {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				});
+
+			return deferred.promise;
+		},
+
+		changeowner: (args) => {
+			var deferred = Q.defer();
+
+			const request = new sql.Request(__database);
+
+			request.input('fileId', args.req.body.fileId);
+			request.input('userId', args.req.body.userId);
+			request.input('adminId', args.req.body.header.userId);
+
+			request.execute('v1_Files_Change_Owner')
+				.then(result => {
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset[0];
+						deferred.resolve(args);
+					} else {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					}
+				})
+				.catch(error => {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				});
+
+			return deferred.promise;
+		},
+
+		updatesubscriber: (args) => {
+			var deferred = Q.defer();
+
+			const request = new sql.Request(__database);
+
+			request.input('fileId', args.req.body.fileId);
+			request.input('userId', args.req.body.userId);
+			request.input('adminId', args.req.body.header.userId);
+
+			request.execute('v1_Files_Update_Subscriber')
 				.then(result => {
 					if (result.returnValue == 1 && result.recordset.length > 0) {
 						args.result = result.recordset[0];

@@ -44,8 +44,8 @@ try {
                 if (args.settings.authentication) {
                     app.use((req, res, next) => {
                         if (req.method != 'GET' && req.method != 'PUT') {
-                            if (req.path == '/drive/files/upload') {
-                                req.originalUrl = '/drive/files/upload';
+                            if (req.path == '/drive/files/add') {
+                                req.originalUrl = '/drive/files/add';
                                 req.body = {
                                     'header': {
                                         'email': req.query.email,

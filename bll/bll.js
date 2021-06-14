@@ -3,6 +3,23 @@ const tools = require('../lib/tools');
 
 var module = function () {
 	var bllFiles = {
+		add: (req, res) => {
+			req.originalUrl = req.originalUrl.split('?')[0];
+
+			var args = {
+				'req': req,
+				'res': res
+			};
+
+			var myModule = new dal.module();
+			myModule.files.add(args)
+				.then(args => {
+					__responder.success(req, res, args.result);
+				}, err => {
+					__responder.error(req, res, err);
+				});
+		},
+
 		get: (req, res) => {
 			var args = {
 				'req': req,
@@ -51,23 +68,6 @@ var module = function () {
 
 			var myModule = new dal.module();
 			myModule.files.update(args)
-				.then(args => {
-					__responder.success(req, res, args.result);
-				}, err => {
-					__responder.error(req, res, err);
-				});
-		},
-
-		upload: (req, res) => {
-			req.originalUrl = req.originalUrl.split('?')[0];
-
-			var args = {
-				'req': req,
-				'res': res
-			};
-
-			var myModule = new dal.module();
-			myModule.files.add(args)
 				.then(args => {
 					__responder.success(req, res, args.result);
 				}, err => {

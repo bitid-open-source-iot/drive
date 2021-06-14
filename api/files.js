@@ -5,6 +5,11 @@ router.use((req, res, next) => {
 	next();
 });
 
+router.post('/add', (req, res) => {
+	var myModule = new bll.module();
+	myModule.files.add(req, res);
+});
+
 router.get('/get', (req, res) => {
 	var myModule = new bll.module();
 	myModule.files.get(req, res);
@@ -18,11 +23,6 @@ router.post('/list', (req, res) => {
 router.post('/share', (req, res) => {
 	var myModule = new bll.module();
 	myModule.files.share(req, res);
-});
-
-router.post('/upload', (req, res) => {
-	var myModule = new bll.module();
-	myModule.files.upload(req, res);
 });
 
 router.post('/update', (req, res) => {

@@ -31,34 +31,54 @@ AS
 SET NOCOUNT ON
 
 BEGIN TRY
-	INSERT INTO [dbo].[tblFiles]
-		(
-			[name],
-			[data],
-			[size],
-			[appId],
-			[token],
-			[userId],
-			[mimetype],
-			[organizationOnly]
-		)
-	VALUES
-		(
-			@name,
-			@data,
-			@size,
-			@appId,
-			@token,
-			@userId,
-			@mimetype,
-			@organizationOnly
-		)
+	BEGIN TRAN
+		DECLARE @id INT
 
-	SELECT SCOPE_IDENTITY() AS [id]
+		INSERT INTO [dbo].[tblFiles]
+			(
+				[name],
+				[data],
+				[size],
+				[appId],
+				[token],
+				[userId],
+				[mimetype],
+				[organizationOnly]
+			)
+		VALUES
+			(
+				@name,
+				@data,
+				@size,
+				@appId,
+				@token,
+				@userId,
+				@mimetype,
+				@organizationOnly
+			)
+
+		SET @id = SCOPE_IDENTITY()
+
+		INSERT INTO [dbo].[tblFilesUsers]
+			(
+				[role],
+				[fileId],
+				[userId]
+			)
+		VALUES
+			(
+				5,
+				@id,
+				@userId
+			)
+	COMMIT
+	
+	SELECT @id AS [id], @token AS [token]
 	RETURN 1
 END TRY
 
 BEGIN CATCH
+	ROLLBACK TRAN
 	SELECT Error_Message() AS [message], 503 AS [code]
 	RETURN 0
 END CATCH
@@ -185,9 +205,9 @@ BEGIN TRY
 			[file].[size],
 			[file].[appId],
 			[file].[token],
-			[file].[userId],
 			[user].[userId],
 			[file].[mimetype],
+			[file].[serverDate],
 			[file].[organizationOnly]
 		FROM
 			[dbo].[tblFiles] AS [file]
@@ -196,7 +216,7 @@ BEGIN TRY
 		ON
 			[file].[id] = [user].[fileId]
 		WHERE
-			[file].[id] IN (SELECT TOP 1 [fileId] FROM [dbo].[tblFilesUsers] WHERE [userId] = @userId)
+			[file].[id] IN (SELECT [fileId] FROM [dbo].[tblFilesUsers] WHERE [userId] = @userId)
 
 	IF (@@ROWCOUNT = 0)
 	BEGIN

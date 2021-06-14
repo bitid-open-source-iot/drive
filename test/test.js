@@ -13,10 +13,10 @@ var token = null;
 var fileId = null;
 
 describe('Files', function () {
-    it('/drive/files/upload', function (done) {
-        this.timeout(500000);
+    it('/drive/files/add', function (done) {
+        this.timeout(5000);
 
-        tools.api.files.upload()
+        tools.api.files.add()
             .then((result) => {
                 try {
                     token = result.token;
@@ -42,6 +42,9 @@ describe('Files', function () {
         tools.api.files.get()
             .then((result) => {
                 try {
+                    result.should.have.property('size');
+                    result.should.have.property('type');
+                    result.should.have.property('slice');
                     done();
                 } catch (e) {
                     done(e);
@@ -61,18 +64,16 @@ describe('Files', function () {
         tools.api.files.list()
             .then((result) => {
                 try {
-                    token = result[0].token;
-                    fileId = result[0].fileId;
                     result[0].should.have.property('role');
-                    result[0].should.have.property('appId');
+                    result[0].should.have.property('name');
+                    result[0].should.have.property('data');
+                    result[0].should.have.property('size');
                     result[0].should.have.property('users');
+                    result[0].should.have.property('appId');
                     result[0].should.have.property('token');
                     result[0].should.have.property('fileId');
-                    result[0].should.have.property('aliases');
-                    result[0].should.have.property('filename');
-                    result[0].should.have.property('uploadDate');
+                    result[0].should.have.property('mimetype');
                     result[0].should.have.property('serverDate');
-                    result[0].should.have.property('contentType');
                     result[0].should.have.property('organizationOnly');
                     done();
                 } catch (e) {
@@ -87,26 +88,26 @@ describe('Files', function () {
             });
     });
 
-    it('/drive/files/update', function (done) {
-        this.timeout(5000);
+    // it('/drive/files/update', function (done) {
+    //     this.timeout(5000);
 
-        tools.api.files.update()
-            .then((result) => {
-                try {
-                    result.should.have.property('updated');
-                    expect(result.updated).to.equal(1);
-                    done();
-                } catch (e) {
-                    done(e);
-                };
-            }, (err) => {
-                try {
-                    done(err);
-                } catch (e) {
-                    done(e);
-                };
-            });
-    });
+    //     tools.api.files.update()
+    //         .then((result) => {
+    //             try {
+    //                 result.should.have.property('updated');
+    //                 expect(result.updated).to.equal(1);
+    //                 done();
+    //             } catch (e) {
+    //                 done(e);
+    //             };
+    //         }, (err) => {
+    //             try {
+    //                 done(err);
+    //             } catch (e) {
+    //                 done(e);
+    //             };
+    //         });
+    // });
 
     it('/drive/files/share', function (done) {
         this.timeout(5000);
@@ -129,7 +130,7 @@ describe('Files', function () {
             });
     });
 
-    it('/drive/files/updatesubscriber', function (done) {
+    it('/drive/files/update-subscriber', function (done) {
         this.timeout(5000);
 
         tools.api.files.updatesubscriber()
@@ -220,63 +221,7 @@ describe('Health Check', function () {
 var tools = {
     api: {
         files: {
-            get: () => {
-                var deferred = Q.defer();
-
-                tools.get('/drive/files/get', {
-                    'token': token,
-                    'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
-            },
-            list: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/list', {
-                    'filter': [
-                        'role',
-                        'appId',
-                        'users',
-                        'token',
-                        'fileId',
-                        'aliases',
-                        'filename',
-                        'uploadDate',
-                        'serverDate',
-                        'contentType',
-                        'organizationOnly'
-                    ]
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
-            },
-            share: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/share', {
-                    'role': 4,
-                    'email': 'shared@email.com',
-                    'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
-            },
-            update: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/update', {
-                    'fileId': fileId,
-                    'description': 'Mocha Test Report Updated'
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
-            },
-            upload: () => {
+            add: () => {
                 var deferred = Q.defer();
 
                 fs.readFile(__dirname + '/file.txt', (err, data) => {
@@ -287,11 +232,50 @@ var tools = {
 
                         form.append('uploads[]', data, 'file.txt');
 
-                        const url = ['/drive/files/upload?', 'email', '=', config.email, '&', 'appId', '=', config.appId].join('');
+                        const url = ['/drive/files/add?', 'userId', '=', config.userId, '&', 'appId', '=', config.appId].join('');
 
                         tools.upload(url, form).then(deferred.resolve, deferred.resolve);
                     };
                 });
+
+                return deferred.promise;
+            },
+            get: () => {
+                return tools.get('/drive/files/get', {
+                    'token': token,
+                    'fileId': fileId
+                });
+            },
+            list: () => {
+                return tools.post('/drive/files/list', {
+                    'filter': [
+                        'role',
+                        'name',
+                        'data',
+                        'size',
+                        'users',
+                        'appId',
+                        'token',
+                        'fileId',
+                        'mimetype',
+                        'serverDate',
+                        'organizationOnly'
+                    ]
+                });
+            },
+            share: () => {
+                return tools.post('/drive/files/share', {
+                    'role': 4,
+                    'userId': 0,
+                    'fileId': fileId
+                });
+            },
+            update: () => {
+                return tools.post('/drive/files/update', {
+                    'fileId': fileId,
+                    'description': 'Mocha Test Report Updated'
+                })
+                    .then(deferred.resolve, deferred.resolve);
 
                 return deferred.promise;
             },
@@ -309,7 +293,18 @@ var tools = {
                 var deferred = Q.defer();
 
                 tools.post('/drive/files/unsubscribe', {
-                    'email': 'shared@email.com',
+                    'userId': 0,
+                    'fileId': fileId
+                })
+                    .then(deferred.resolve, deferred.resolve);
+
+                return deferred.promise;
+            },
+            changeowner: () => {
+                var deferred = Q.defer();
+
+                tools.post('/drive/files/change-owner', {
+                    'userId': 0,
                     'fileId': fileId
                 })
                     .then(deferred.resolve, deferred.resolve);
@@ -319,7 +314,7 @@ var tools = {
             updatesubscriber: () => {
                 var deferred = Q.defer();
 
-                tools.post('/drive/files/updatesubscriber', {
+                tools.post('/drive/files/update-subscriber', {
                     'role': 2,
                     'email': 'shared@email.com',
                     'fileId': fileId
@@ -330,12 +325,7 @@ var tools = {
             }
         },
         healthcheck: () => {
-            var deferred = Q.defer();
-
-            tools.put('/health-check', {})
-                .then(deferred.resolve, deferred.resolve);
-
-            return deferred.promise;
+            return tools.put('/health-check', {});
         }
     },
     get: async (url, payload) => {
@@ -366,8 +356,8 @@ var tools = {
         var deferred = Q.defer();
 
         payload.header = {
-            'email': config.email,
-            'appId': config.appId
+            'appId': config.appId,
+            'userId': config.userId
         };
 
         payload = JSON.stringify(payload);
@@ -393,8 +383,8 @@ var tools = {
         var deferred = Q.defer();
 
         payload.header = {
-            'email': config.email,
-            'appId': config.appId
+            'appId': config.appId,
+            'userId': config.userId
         };
 
         payload = JSON.stringify(payload);
