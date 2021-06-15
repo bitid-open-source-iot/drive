@@ -3,8 +3,8 @@ Set1 - CREATE TABLE tblFilesUsers & CREATE UNIQUE INDEX
 Set2 - CREATE TABLE tblFilesUsers_AuditExact & Triggers
 */
 
-DROP TABLE [dbo].[tblFilesUsers]
-DROP TABLE [dbo].[tblFilesUsers_AuditExact]
+-- DROP TABLE [dbo].[tblFilesUsers]
+-- DROP TABLE [dbo].[tblFilesUsers_AuditExact]
 
 -- Set1
 

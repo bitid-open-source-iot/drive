@@ -3,8 +3,8 @@ Set1 - CREATE TABLE tblFiles
 Set2 - CREATE TABLE tblFiles_AuditExact & Triggers
 */
 
-DROP TABLE [dbo].[tblFiles]
-DROP TABLE [dbo].[tblFiles_AuditExact]
+-- DROP TABLE [dbo].[tblFiles]
+-- DROP TABLE [dbo].[tblFiles_AuditExact]
 
 -- Set1
 
