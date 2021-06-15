@@ -10,40 +10,50 @@ var module = function () {
 		add: (args) => {
 			var deferred = Q.defer();
 
-			const request = new sql.Request(__database);
+			fs.readFile(args.req.files['uploads[]'].tempFilePath, (err, data) => {
+				if (err) {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = 503;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				} else {
+					const request = new sql.Request(__database);
 
-			request.input('name', args.req.files['uploads[]'].name)
-			request.input('data', args.req.files['uploads[]'].data)
-			request.input('size', args.req.files['uploads[]'].size)
-			request.input('appId', args.req.query.appId)
-			request.input('token', tools.generateToken(32))
-			request.input('userId', args.req.query.userId)
-			request.input('mimetype', args.req.files['uploads[]'].mimetype)
-			request.input('organizationOnly', args.req.query.organizationOnly || 0)
+					request.input('name', args.req.files['uploads[]'].name)
+					request.input('data', data.toString('base64'))
+					request.input('size', args.req.files['uploads[]'].size)
+					request.input('appId', args.req.query.appId)
+					request.input('token', tools.generateToken(32))
+					request.input('userId', args.req.query.userId)
+					request.input('mimetype', args.req.files['uploads[]'].mimetype)
+					request.input('organizationOnly', args.req.query.organizationOnly || 0)
 
-			request.execute('v1_Files_Add')
-				.then(result => {
-					fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
-						if (result.returnValue == 1 && result.recordset.length > 0) {
-							args.result = result.recordset[0];
-							deferred.resolve(args);
-						} else {
-							var err = new ErrorResponse();
-							err.error.errors[0].code = result.recordset[0].code;
-							err.error.errors[0].reason = result.recordset[0].message;
-							err.error.errors[0].message = result.recordset[0].message;
-							deferred.reject(err);
-						};
-					});
-				}, error => {
-					fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
-						var err = new ErrorResponse();
-						err.error.errors[0].code = 503;
-						err.error.errors[0].reason = error.message;
-						err.error.errors[0].message = error.message;
-						deferred.reject(err);
-					});
-				});
+					request.execute('v1_Files_Add')
+						.then(result => {
+							fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
+								if (result.returnValue == 1 && result.recordset.length > 0) {
+									args.result = result.recordset[0];
+									deferred.resolve(args);
+								} else {
+									var err = new ErrorResponse();
+									err.error.errors[0].code = result.recordset[0].code;
+									err.error.errors[0].reason = result.recordset[0].message;
+									err.error.errors[0].message = result.recordset[0].message;
+									deferred.reject(err);
+								};
+							});
+						}, error => {
+							fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
+								var err = new ErrorResponse();
+								err.error.errors[0].code = 503;
+								err.error.errors[0].reason = error.message;
+								err.error.errors[0].message = error.message;
+								deferred.reject(err);
+							});
+						});
+				};
+			});
 
 			return deferred.promise;
 		},

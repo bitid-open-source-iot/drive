@@ -3,8 +3,8 @@ Set1 - CREATE TABLE tblFiles
 Set2 - CREATE TABLE tblFiles_AuditExact & Triggers
 */
 
--- DROP TABLE [dbo].[tblFiles]
--- DROP TABLE [dbo].[tblFiles_AuditExact]
+DROP TABLE [dbo].[tblFiles]
+DROP TABLE [dbo].[tblFiles_AuditExact]
 
 -- Set1
 
@@ -17,7 +17,7 @@ CREATE TABLE [dbo].[tblFiles]
 	[userId] INT NOT NULL,
 	[serverDate] DATETIME NOT NULL DEFAULT GETDATE(),
 	[name] VARCHAR(255),
-	[data] BINARY NOT NULL,
+	[data] VARCHAR(MAX) NOT NULL,
 	[size] INT NOT NULL,
 	[appId] INT NOT NULL,
 	[token] VARCHAR(32) NOT NULL,
@@ -46,7 +46,7 @@ BEGIN
 		[userAction] INT NOT NULL,
 		[dateAction] DATETIME NOT NULL CONSTRAINT DF_tblFiles_AuditExact_dateAction DEFAULT GETDATE(),
 		[name] VARCHAR(255) NOT NULL,
-		[data] BINARY NOT NULL,
+		[data] VARCHAR(MAX) NOT NULL,
 		[size] INT NOT NULL,
 		[appId] INT NOT NULL,
 		[token] VARCHAR(32) NOT NULL,

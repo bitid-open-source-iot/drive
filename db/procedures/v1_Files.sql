@@ -23,7 +23,7 @@ GO
 
 CREATE PROCEDURE [dbo].[v1_Files_Add]
 	@name VARCHAR(255),
-	@data BINARY,
+	@data VARCHAR(MAX),
 	@size INT,
 	@appId INT,
 	@token VARCHAR(32),
