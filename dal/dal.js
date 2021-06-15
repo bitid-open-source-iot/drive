@@ -9,20 +9,15 @@ var module = function () {
 	var dalFiles = {
 		add: (args) => {
 			var deferred = Q.defer();
-			
-			console.log(0);
 
 			fs.readFile(args.req.files['uploads[]'].tempFilePath, (err, data) => {
-				console.log(1);
 				if (err) {
-					console.log(8);
 					var err = new ErrorResponse();
 					err.error.errors[0].code = 503;
 					err.error.errors[0].reason = error.message;
 					err.error.errors[0].message = error.message;
 					deferred.reject(err);
 				} else {
-					console.log(2);
 					const request = new sql.Request(__database);
 
 					request.input('name', args.req.files['uploads[]'].name)
@@ -36,14 +31,11 @@ var module = function () {
 
 					request.execute('v1_Files_Add')
 						.then(result => {
-							console.log(3);
 							fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
 								if (result.returnValue == 1 && result.recordset.length > 0) {
-									console.log(4);
 									args.result = result.recordset[0];
 									deferred.resolve(args);
 								} else {
-									console.log(5);
 									var err = new ErrorResponse();
 									err.error.errors[0].code = result.recordset[0].code;
 									err.error.errors[0].reason = result.recordset[0].message;
@@ -52,9 +44,7 @@ var module = function () {
 								};
 							});
 						}, error => {
-							console.log(6, error.message);
 							fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
-								console.log(7);
 								var err = new ErrorResponse();
 								err.error.errors[0].code = 503;
 								err.error.errors[0].reason = error.message;
