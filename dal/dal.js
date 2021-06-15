@@ -52,7 +52,7 @@ var module = function () {
 								};
 							});
 						}, error => {
-							console.log(6);
+							console.log(6, error.message);
 							fs.unlink(args.req.files['uploads[]'].tempFilePath, () => {
 								console.log(7);
 								var err = new ErrorResponse();
