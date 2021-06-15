@@ -48,8 +48,8 @@ try {
                                 req.originalUrl = '/drive/files/add';
                                 req.body = {
                                     'header': {
-                                        'email': req.query.email,
-                                        'appId': req.query.appId
+                                        'appId': req.query.appId,
+                                        'userId': req.query.userId
                                     }
                                 };
                             };
