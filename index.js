@@ -10,12 +10,38 @@ const fileupload = require('express-fileupload');
 const healthcheck = require('@bitid/health-check');
 const ErrorResponse = require('./lib/error-response');
 
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '.env') })
+
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+
+let config = require('./config.json');
+let configDefault = config.default
+let configEnvironment = config[process.env.NODE_ENV]
+global.__settings = {...configDefault, ...configEnvironment}
+
+
 global.__base = __dirname + '/';
-global.__logger = require('./lib/logger');
-global.__settings = require('./config.json');
 global.__responder = new responder.module();
 
-__logger.init();
+try{
+    __settings.mongodb = process.env.mongodb
+    __settings.mongodb = __settings.mongodb.replace(/xxx/g, 'drive')
+    __settings.mongodb = JSON.parse(__settings.mongodb)
+
+    __settings.auth.token = JSON.parse(process.env.BITID_TOKEN)
+    __settings.auth.email = process.env.BITID_EMAIL
+
+    /**TODO SMTP */
+
+    console.log(JSON.stringify(__settings))
+
+}catch(e){
+    console.error('ERROR APPLYING ENV VARIABLES', e)
+}
+
+
 
 try {
     var portal = {
@@ -63,7 +89,7 @@ try {
                                 .then(result => {
                                     next();
                                 }, error => {
-                                    __logger.error(error);
+                                    console.error(error);
                                     __responder.error(req, res, error);
                                 });
                         } else {
@@ -74,10 +100,10 @@ try {
 
                 var files = require('./api/files');
                 app.use('/drive/files', files);
-                __logger.info('Loaded: /drive/files');
+                console.log('Loaded: /drive/files');
 
                 app.use('/health-check', healthcheck);
-                __logger.info('Loaded: /health-check');
+                console.log('Loaded: /health-check');
 
                 app.use((error, req, res, next) => {
                     var err = new ErrorResponse();
@@ -94,7 +120,7 @@ try {
                 deferred.resolve(args);
             } catch (error) {
                 deferred.reject(error);
-                __logger.error(error);
+                console.error(error);
             };
 
             return deferred.promise;
@@ -130,10 +156,10 @@ try {
                 .then(portal.database, null)
                 .then(args => {
                     console.log('Webserver Running on port: ', args.settings.localwebserver.port);
-                    __logger.info('Webserver Running on port: ' + args.settings.localwebserver.port);
+                    console.log('Webserver Running on port: ' + args.settings.localwebserver.port);
                 }, err => {
                     console.log('Error Initializing: ', err);
-                    __logger.error('Error Initializing: ' + err);
+                    console.error('Error Initializing: ' + err);
                 });
         },
 

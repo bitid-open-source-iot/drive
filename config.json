@@ -1,0 +1,47 @@
+{
+    "default": {
+        "limit": 50,
+        "production": true,
+        "authentication": true,
+        "auth": {
+            "host": "http://localhost:9000",
+            "token": {},
+            "email": "xxx",
+            "appId": "000000000000000000000001"
+        },
+        "mongodb": {
+            "url": "xxx",
+            "database": "xxx"
+        },
+        "localwebserver": {
+            "port": 13000
+        }
+    },
+    "development": {
+        "production": true,
+        "authentication": true,
+        "auth": {
+            "host": "http://localhost:9000"
+        }
+    },
+    "kubernetes": {
+        "production": true,
+        "authentication": true,
+        "auth": {
+            "host": "http://auth-service:9000"
+        }
+    },
+    "production": {
+        "limit": 50,
+        "production": true,
+        "authentication": true,
+        "auth": {
+            "host": "https://auth.bitid.co.za"
+        },
+        "localwebserver": {
+            "port": 13000
+        }
+    }
+    
+    
+}
