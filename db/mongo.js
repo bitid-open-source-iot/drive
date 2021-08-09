@@ -161,6 +161,7 @@ exports.call = (args) => {
 						'message': 'Invalid Credentials'
 					});
 				} else {
+					args.res.setHeader('Set-Cookie', 'HttpOnly;Secure;SameSite=None');
 					args.res.setHeader('Content-Type', file.contentType);
 					args.res.setHeader('Content-Disposition', 'attachment;filename*=UTF-8\'\'' + file.filename);
 					var readstream = gfs.createReadStream(args.params);
