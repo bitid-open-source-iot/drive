@@ -70,8 +70,6 @@ try {
                     abortOnLimit: true
                 }));
 
-                console.log(__settings.limit * 1024 * 1024);
-
                 if (args.settings.authentication) {
                     app.use((req, res, next) => {
                         if (req.method != 'GET' && req.method != 'PUT') {
