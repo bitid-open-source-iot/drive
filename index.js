@@ -30,6 +30,8 @@ try{
     __settings.mongodb = __settings.mongodb.replace(/xxx/g, 'drive')
     __settings.mongodb = JSON.parse(__settings.mongodb)
 
+    __settings.auth.host = process.env.hostAuth
+
     __settings.auth.token = JSON.parse(process.env.BITID_TOKEN)
     __settings.auth.email = process.env.BITID_EMAIL
 
@@ -156,7 +158,6 @@ try {
                 .then(portal.database, null)
                 .then(args => {
                     console.log('Webserver Running on port: ', args.settings.localwebserver.port);
-                    console.log('Webserver Running on port: ' + args.settings.localwebserver.port);
                 }, err => {
                     console.log('Error Initializing: ', err);
                     console.error('Error Initializing: ' + err);

@@ -19,28 +19,16 @@
     },
     "development": {
         "production": true,
-        "authentication": true,
-        "auth": {
-            "host": "http://localhost:9000"
-        }
+        "authentication": true
     },
     "kubernetes": {
         "production": true,
-        "authentication": true,
-        "auth": {
-            "host": "http://auth-service:9000"
-        }
+        "authentication": true
     },
     "production": {
         "limit": 50,
         "production": true,
-        "authentication": true,
-        "auth": {
-            "host": "https://auth.bitid.co.za"
-        },
-        "localwebserver": {
-            "port": 13000
-        }
+        "authentication": true
     }
     
     
