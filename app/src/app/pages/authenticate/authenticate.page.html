@@ -1,0 +1,17 @@
+<mat-content>
+    <mat-spinner diameter="56" *ngIf="loading"></mat-spinner>
+
+    <h1 *ngIf="loading">
+        Logging In
+    </h1>
+
+    <h3 *ngIf="!loading && error">
+        There was an issue getting your account!
+    </h3>
+
+    <button mat-icon-button *ngIf="!loading && error" (click)="retrieve()">
+        <mat-icon>
+            refresh
+        </mat-icon>
+    </button>
+</mat-content>

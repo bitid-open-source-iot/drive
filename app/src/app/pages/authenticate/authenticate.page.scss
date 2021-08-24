@@ -1,0 +1,9 @@
+mat-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    mat-spinner {
+        margin-bottom: 20px;
+    }
+}

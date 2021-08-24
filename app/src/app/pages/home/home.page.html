@@ -1,0 +1,15 @@
+<mat-content>
+    <img [src]="icon" alt="icon" width="152" height="152" draggable="false">
+
+    <h1>
+        {{ name }}
+    </h1>
+
+    <button mat-stroked-button (click)="account.signin()">
+        Sign In
+    </button>
+
+    <button mat-stroked-button (click)="account.signup()">
+        Sign Up
+    </button>
+</mat-content>
