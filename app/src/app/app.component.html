@@ -1,3 +1,23 @@
-<router-outlet></router-outlet>
+<mat-drawer-container>
+    <mat-drawer mode="side" opened>
+        <mat-toolbar>
+            <img src="./assets/icons/icon-512x512.png" alt="logo" width="48" height="48" draggable="false">
+
+            <mat-label class="spacer">
+                Drive
+            </mat-label>
+
+            <button mat-icon-button>
+                <mat-icon>
+                    close
+                </mat-icon>
+            </button>
+        </mat-toolbar>
+    </mat-drawer>
+
+    <mat-drawer-content>
+        <router-outlet></router-outlet>
+    </mat-drawer-content>
+</mat-drawer-container>
 
 <splashscreen></splashscreen>
