@@ -1,5 +1,5 @@
 <mat-drawer-container>
-    <mat-drawer mode="side" opened>
+    <mat-drawer #drawer mode="side" opened>
         <mat-toolbar>
             <img src="./assets/icons/icon-512x512.png" alt="logo" width="48" height="48" draggable="false">
 
@@ -7,12 +7,24 @@
                 Drive
             </mat-label>
 
-            <button mat-icon-button>
+            <button mat-icon-button (click)="drawer.toggle()">
                 <mat-icon>
                     close
                 </mat-icon>
             </button>
         </mat-toolbar>
+
+        <mat-list>
+            <mat-list-item lines="full" matRipple routerLink="/files" routerLinkActive="active">
+                <mat-icon mat-list-icon>
+                    folder
+                </mat-icon>
+
+                <mat-label>
+                    Files
+                </mat-label>
+            </mat-list-item>
+        </mat-list>
     </mat-drawer>
 
     <mat-drawer-content>

@@ -15,7 +15,7 @@ export class OptionsSheet implements OnInit {
 	public title: any[] = this.config.title;
 	public options: any[] = this.config.options;
 
-	public submit(option) {
+	public submit(option: any) {
 		this.sheet.dismiss(option);
 	}
 

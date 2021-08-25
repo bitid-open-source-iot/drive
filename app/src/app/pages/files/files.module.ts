@@ -6,13 +6,19 @@ import { FilesEditorPage } from './editor/editor.page';
 /* --- MODULES --- */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SearchModule } from 'src/app/libs/search/search.module';
+import { MatListModule } from '@angular/material/list';
+import { OptionsModule } from 'src/app/libs/options/options.module';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatContentModule } from 'src/app/libs/mat-content/mat-content.module';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { Routes, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSidenavModule } from '@angular/material/sidenav';
+
 
 const routes: Routes = [
 	{
@@ -33,12 +39,17 @@ const routes: Routes = [
 	imports: [
 		FormsModule,
 		CommonModule,
+		SearchModule,
+		MatListModule,
 		MatIconModule,
+		OptionsModule,
+		MatTableModule,
 		MatButtonModule,
+		MatContentModule,
 		MatSidenavModule,
 		MatToolbarModule,
-		ReactiveFormsModule,
 		MatFormFieldModule,
+		ReactiveFormsModule,
 		RouterModule.forChild(routes)
 	],
 	declarations: [

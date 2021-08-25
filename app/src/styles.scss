@@ -76,16 +76,21 @@ select {
 }
 mat-toolbar {
     max-height: 56px !important;
+    min-height: 56px !important;
     mat-label {
         font-size: 16px;
+        margin-left: 16px;
     }
 }
 mat-list {
     padding: 0px !important;
     mat-list-item {
         outline: none !important;
+
         mat-icon {
-            margin-right: 16px;
+            margin-right: 23px;
+            margin-left: 10px;
+            color: grey;
         }
     }
     mat-list-item[type="button"] {
@@ -292,6 +297,10 @@ authenticate-page {
     display: flex;
     position: relative;
     flex-direction: column;
+    header {
+        min-height: 300px;
+        background-color: #fafafa;
+    }
     mat-content {
         display: flex;
         flex-direction: column;
