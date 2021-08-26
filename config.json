@@ -9,6 +9,7 @@
             "email": "xxx",
             "appId": "000000000000000000000001"
         },
+        "client": {},
         "mongodb": {
             "url": "xxx",
             "database": "xxx"

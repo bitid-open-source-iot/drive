@@ -1,4 +1,5 @@
 const dal = require('../dal/dal');
+const auth = require('../lib/auth');
 const tools = require('../lib/tools');
 
 var module = function () {
@@ -121,8 +122,30 @@ var module = function () {
 		}
 	};
 
+	var bllConfig = {
+		get: async (req, res) => {
+			var args = {
+				req: req,
+				res: res
+			};
+
+			auth.load(args)
+				.then(args => {
+					var result = JSON.parse(JSON.stringify(__settings.client));
+					result.icon = args.result.icon;
+					result.appId = args.result.appId;
+					result.theme = args.result.theme;
+					result.appName = args.result.name;
+					__responder.success(req, res, result);
+				}, err => {
+					__responder.error(req, res, err);
+				});
+		}
+	};
+
 	return {
-		'files': bllFiles
+		'files': bllFiles,
+		'config': bllConfig
 	};
 };
 
