@@ -1,7 +1,6 @@
 {
-	"token": "xxx",
+	"token": {},
 	"email": "xxx@xxx.co.za",
-	"drive": "http://127.0.0.1:12000",
-	"appId": "xxx",
-	"userId": "xxx"
+	"drive": "http://127.0.0.1:13000",
+	"appId": "xxx"
 }

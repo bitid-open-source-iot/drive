@@ -1,17 +1,42 @@
-const Q = require('q');
-const fs = require('fs');
-const chai = require('chai');
-const fetch = require('node-fetch');
-const expect = require('chai').expect;
-const should = require('chai').should();
-const subset = require('chai-subset');
-const config = require('./config.json');
-const FormData = require('form-data');
+var Q = require('q');
+var fs = require('fs');
+var chai = require('chai');
+var fetch = require('node-fetch');
+var expect = require('chai').expect;
+var should = require('chai').should();
+var config = require('./config.json');
+var FormData = require('form-data');
+var subset = require('chai-subset');
 
 chai.use(subset);
 
 var token = null;
 var fileId = null;
+
+describe('Config', function () {
+    it('/drive/config/get', function (done) {
+        this.timeout(5000);
+
+        tools.api.config.get()
+            .then((result) => {
+                try {
+                    result.should.have.property('icon');
+                    result.should.have.property('appId');
+                    result.should.have.property('theme');
+                    result.should.have.property('appName');
+                    done();
+                } catch (e) {
+                    done(e);
+                };
+            }, (err) => {
+                try {
+                    done(err);
+                } catch (e) {
+                    done(e);
+                };
+            });
+    });
+});
 
 describe('Files', function () {
     it('/drive/files/upload', function (done) {
@@ -295,13 +320,13 @@ var tools = {
                 });
             }
         },
+        config: {
+            get: () => {
+                return tools.put('/drive/config/get', {});
+            }
+        },
         healthcheck: () => {
-            var deferred = Q.defer();
-
-            tools.put('/health-check', {})
-                .then(deferred.resolve, deferred.resolve);
-
-            return deferred.promise;
+            return tools.put('/health-check', {});
         }
     },
     get: async (url, payload) => {
@@ -341,6 +366,7 @@ var tools = {
         const response = await fetch(config.drive + url, {
             'headers': {
                 'Accept': '*/*',
+                'Origin': config.drive,
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization': JSON.stringify(config.token),
                 'Content-Length': payload.length

@@ -43,8 +43,6 @@ try {
     console.error('ERROR APPLYING ENV VARIABLES', e)
 }
 
-
-
 try {
     var portal = {
         api: (args) => {
@@ -98,9 +96,11 @@ try {
                     });
                 };
 
-                var files = require('./api/files');
-                app.use('/drive/files', files);
+                app.use('/drive/files', require('./api/files'));
                 console.log('Loaded: /drive/files');
+
+                app.use('/drive/config', require('./api/config'));
+                console.log('Loaded: /drive/config');
 
                 app.use('/health-check', healthcheck);
                 console.log('Loaded: /health-check');

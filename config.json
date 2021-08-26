@@ -9,6 +9,7 @@
             "email": "xxx",
             "appId": "000000000000000000000001"
         },
+        "client": {},
         "mongodb": {
             "url": "xxx",
             "database": "xxx"
@@ -18,8 +19,8 @@
         }
     },
     "development": {
-        "production": true,
-        "authentication": true
+        "production": false,
+        "authentication": false
     },
     "kubernetes": {
         "production": true,
@@ -30,6 +31,4 @@
         "production": true,
         "authentication": true
     }
-    
-    
 }
