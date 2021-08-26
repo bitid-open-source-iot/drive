@@ -89,6 +89,7 @@ describe('Files', function () {
                 try {
                     token = result[0].token;
                     fileId = result[0].fileId;
+                    result[0].should.have.property('size');
                     result[0].should.have.property('role');
                     result[0].should.have.property('appId');
                     result[0].should.have.property('users');
@@ -255,6 +256,7 @@ var tools = {
             list: () => {
                 return tools.post('/drive/files/list', {
                     'filter': [
+                        'size',
                         'role',
                         'appId',
                         'users',
