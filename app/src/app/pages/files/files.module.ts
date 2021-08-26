@@ -12,10 +12,12 @@ import { OptionsModule } from 'src/app/libs/options/options.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { TotalPipeModule } from 'src/app/pipes/total/total.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatContentModule } from 'src/app/libs/mat-content/mat-content.module';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { FileSizePipeModule } from 'src/app/pipes/file-size/file-size.module';
 import { MatBackButtonModule } from 'src/app/libs/mat-back-button/mat-back-button.module';
 import { MatMenuButtonModule } from 'src/app/libs/mat-menu-button/mat-menu-button.module';
 import { Routes, RouterModule } from '@angular/router';
@@ -47,9 +49,11 @@ const routes: Routes = [
 		OptionsModule,
 		MatTableModule,
 		MatButtonModule,
+		TotalPipeModule,
 		MatContentModule,
 		MatSidenavModule,
 		MatToolbarModule,
+		FileSizePipeModule,
 		MatFormFieldModule,
 		ReactiveFormsModule,
 		MatMenuButtonModule,
