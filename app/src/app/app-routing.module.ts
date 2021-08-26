@@ -10,7 +10,7 @@ const routes: Routes = [
     },
     {
         path: 'files',
-        // canActivate: [AuthManager],
+        canActivate: [AuthManager],
         loadChildren: () => import('./pages/files/files.module').then(m => m.FilesPageModule)
     },
     {

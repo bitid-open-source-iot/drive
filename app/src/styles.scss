@@ -43,6 +43,10 @@ table {
         height: 30px !important;
         background-color: #fff;
     }
+    .mat-footer-row {
+        height: 30px !important;
+        background-color: #fff;
+    }
     .mat-row .mat-cell {
         font-size: 15px;
     }
@@ -241,6 +245,13 @@ body.dark-mode {
             border-color: #212121 !important;
         }
     }
+    .mat-footer-row {
+        background-color: #212121 !important;
+        .mat-footer-cell {
+            color: #e0e0e0 !important;
+            border-color: #212121 !important;
+        }
+    }
     .mat-row {
         .mat-cell {
             color: #e0e0e0 !important;
@@ -293,7 +304,7 @@ files-page,
 files-viewer-page,
 files-editor-page,
 authenticate-page {
-    height: calc(100vh - 80px);
+    height: 100vh;
     display: flex;
     position: relative;
     flex-direction: column;

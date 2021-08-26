@@ -1,8 +1,6 @@
-table {
-    width: 100%;
-}
-.addBtn {
+[mat-fab] {
     right: 16px;
     bottom: 16px;
+    z-index: 10;
     position: fixed;
 }
