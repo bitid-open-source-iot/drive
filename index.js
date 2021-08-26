@@ -19,13 +19,13 @@ console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 let config = require('./config.json');
 let configDefault = config.default
 let configEnvironment = config[process.env.NODE_ENV]
-global.__settings = {...configDefault, ...configEnvironment}
+global.__settings = { ...configDefault, ...configEnvironment }
 
 
 global.__base = __dirname + '/';
 global.__responder = new responder.module();
 
-try{
+try {
     __settings.mongodb = process.env.mongodb
     __settings.mongodb = __settings.mongodb.replace(/xxx/g, 'drive')
     __settings.mongodb = JSON.parse(__settings.mongodb)
@@ -39,11 +39,9 @@ try{
 
     console.log(JSON.stringify(__settings))
 
-}catch(e){
+} catch (e) {
     console.error('ERROR APPLYING ENV VARIABLES', e)
 }
-
-
 
 try {
     var portal = {

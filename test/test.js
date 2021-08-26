@@ -6,8 +6,9 @@ var expect = require('chai').expect;
 var should = require('chai').should();
 var config = require('./config.json');
 var FormData = require('form-data');
-var chaiSubset = require('chai-subset');
-chai.use(chaiSubset);
+var subset = require('chai-subset');
+
+chai.use(subset);
 
 var token = null;
 var fileId = null;
@@ -56,7 +57,7 @@ describe('Files', function () {
     });
 
     it('/drive/files/list', function (done) {
-        this.timeout(5000);
+        this.timeout(500000000000000);
 
         tools.api.files.list()
             .then((result) => {
@@ -129,7 +130,7 @@ describe('Files', function () {
             });
     });
 
-    it('/drive/files/updatesubscriber', function (done) {
+    it('/drive/files/update-subscriber', function (done) {
         this.timeout(5000);
 
         tools.api.files.updatesubscriber()
@@ -221,20 +222,13 @@ var tools = {
     api: {
         files: {
             get: () => {
-                var deferred = Q.defer();
-
-                tools.get('/drive/files/get', {
+                return tools.get('/drive/files/get', {
                     'token': token,
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             list: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/list', {
+                return tools.post('/drive/files/list', {
                     'filter': [
                         'role',
                         'appId',
@@ -248,33 +242,20 @@ var tools = {
                         'contentType',
                         'organizationOnly'
                     ]
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             share: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/share', {
+                return tools.post('/drive/files/share', {
                     'role': 4,
                     'email': 'shared@email.com',
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             update: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/update', {
+                return tools.post('/drive/files/update', {
                     'fileId': fileId,
                     'description': 'Mocha Test Report Updated'
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             upload: () => {
                 var deferred = Q.defer();
@@ -296,46 +277,26 @@ var tools = {
                 return deferred.promise;
             },
             delete: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/delete', {
+                return tools.post('/drive/files/delete', {
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             unsubscribe: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/unsubscribe', {
+                return tools.post('/drive/files/unsubscribe', {
                     'email': 'shared@email.com',
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             },
             updatesubscriber: () => {
-                var deferred = Q.defer();
-
-                tools.post('/drive/files/updatesubscriber', {
+                return tools.post('/drive/files/update-subscriber', {
                     'role': 2,
                     'email': 'shared@email.com',
                     'fileId': fileId
-                })
-                    .then(deferred.resolve, deferred.resolve);
-
-                return deferred.promise;
+                });
             }
         },
         healthcheck: () => {
-            var deferred = Q.defer();
-
-            tools.put('/health-check', {})
-                .then(deferred.resolve, deferred.resolve);
-
-            return deferred.promise;
+            return tools.put('/health-check', {});
         }
     },
     get: async (url, payload) => {
