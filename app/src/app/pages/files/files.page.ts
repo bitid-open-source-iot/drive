@@ -62,7 +62,7 @@ export class FilesPage implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.table.data = [
 			{
-				size: 1000000,
+				size: 10000,
 				appId: '000000000000000000000001',
 				fileId: '000000000000000000000001',
 				description: 'My Image.png',
@@ -74,7 +74,7 @@ export class FilesPage implements OnInit, OnDestroy {
 				description: 'My Second.png',
 			},
 			{
-				size: 1000000,
+				size: 1000000000,
 				appId: '000000000000000000000001',
 				fileId: '000000000000000000000003',
 				description: 'My Third.png',
