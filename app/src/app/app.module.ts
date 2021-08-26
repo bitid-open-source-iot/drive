@@ -20,6 +20,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 /* --- SERVICES --- */
 import { ApiService } from './services/api/api.service';
 import { AuthManager } from './services/auth/auth.service';
+import { MenuService } from './services/menu/menu.service';
+import { FilesService } from './services/files/files.service';
 import { ToastService } from './services/toast/toast.service';
 import { ConfigService } from './services/config/config.service';
 import { AccountService } from './services/account/account.service';
@@ -60,6 +62,8 @@ import { environment } from '../environments/environment';
     providers: [
         ApiService,
         AuthManager,
+        MenuService,
+        FilesService,
         ToastService,
         ConfigService,
         FiltersService,
