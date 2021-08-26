@@ -1,10 +1,12 @@
+import { File } from 'src/app/classes/file';
 import { Router } from '@angular/router';
+import { MatSort } from '@angular/material/sort';
 import { FilesService } from 'src/app/services/files/files.service';
 import { ConfigService } from 'src/app/services/config/config.service';
 import { OptionsService } from 'src/app/libs/options/options.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { OnInit, Component, OnDestroy } from '@angular/core';
-import { File } from 'src/app/classes/file';
+import { OnInit, Component, OnDestroy, ViewChild } from '@angular/core';
+
 
 @Component({
 	selector: 'files-page',
@@ -14,12 +16,16 @@ import { File } from 'src/app/classes/file';
 
 export class FilesPage implements OnInit, OnDestroy {
 
+	@ViewChild(MatSort, { static: true }) private sort?: MatSort;
+
 	constructor(private sheet: OptionsService, private config: ConfigService, private router: Router, private service: FilesService) { }
 
 	public table: MatTableDataSource<any> = new MatTableDataSource<any>();
 	public columns: string[] = ['filename', 'size'];
 	public loading?: boolean;
-	private observers: any = {};
+	private observers: any = { };
+
+	public fileNum: any = this.table.data.length;
 
 	private async list() {
 		this.loading = true;
@@ -84,7 +90,7 @@ export class FilesPage implements OnInit, OnDestroy {
 					icon: 'delete',
 					title: 'Delete',
 					danger: true,
-					handler: () => {},
+					handler: () => { },
 					disabled: []
 				}
 			]
@@ -92,6 +98,8 @@ export class FilesPage implements OnInit, OnDestroy {
 	}
 
 	ngOnInit(): void {
+		(this.table as any).sort = this.sort;
+
 		this.observers.loaded = this.config.loaded.subscribe((loaded: boolean) => {
 			if (loaded) {
 				this.list();
