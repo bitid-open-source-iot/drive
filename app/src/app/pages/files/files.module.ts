@@ -16,6 +16,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatContentModule } from 'src/app/libs/mat-content/mat-content.module';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatBackButtonModule } from 'src/app/libs/mat-back-button/mat-back-button.module';
+import { MatMenuButtonModule } from 'src/app/libs/mat-menu-button/mat-menu-button.module';
 import { Routes, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -50,6 +52,8 @@ const routes: Routes = [
 		MatToolbarModule,
 		MatFormFieldModule,
 		ReactiveFormsModule,
+		MatMenuButtonModule,
+		MatBackButtonModule,
 		RouterModule.forChild(routes)
 	],
 	declarations: [

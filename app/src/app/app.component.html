@@ -1,17 +1,11 @@
 <mat-drawer-container>
-    <mat-drawer #drawer mode="side" opened>
+    <mat-drawer mode="side" opened>
         <mat-toolbar>
             <img [src]="icon" alt="logo" width="48" height="48" draggable="false">
 
             <mat-label class="spacer">
                 Drive
             </mat-label>
-
-            <button mat-icon-button (click)="drawer.toggle()">
-                <mat-icon>
-                    close
-                </mat-icon>
-            </button>
         </mat-toolbar>
 
         <mat-list>
