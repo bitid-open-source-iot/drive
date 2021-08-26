@@ -13,6 +13,31 @@ chai.use(subset);
 var token = null;
 var fileId = null;
 
+describe('Config', function () {
+    it('/drive/config/get', function (done) {
+        this.timeout(5000);
+
+        tools.api.config.get()
+            .then((result) => {
+                try {
+                    result.should.have.property('icon');
+                    result.should.have.property('appId');
+                    result.should.have.property('theme');
+                    result.should.have.property('appName');
+                    done();
+                } catch (e) {
+                    done(e);
+                };
+            }, (err) => {
+                try {
+                    done(err);
+                } catch (e) {
+                    done(e);
+                };
+            });
+    });
+});
+
 describe('Files', function () {
     it('/drive/files/upload', function (done) {
         this.timeout(500000);
@@ -57,7 +82,7 @@ describe('Files', function () {
     });
 
     it('/drive/files/list', function (done) {
-        this.timeout(500000000000000);
+        this.timeout(5000);
 
         tools.api.files.list()
             .then((result) => {
@@ -295,6 +320,11 @@ var tools = {
                 });
             }
         },
+        config: {
+            get: () => {
+                return tools.put('/drive/config/get', {});
+            }
+        },
         healthcheck: () => {
             return tools.put('/health-check', {});
         }
@@ -336,6 +366,7 @@ var tools = {
         const response = await fetch(config.drive + url, {
             'headers': {
                 'Accept': '*/*',
+                'Origin': config.drive,
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization': JSON.stringify(config.token),
                 'Content-Length': payload.length

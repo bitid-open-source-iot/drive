@@ -136,6 +136,7 @@ var module = function () {
 					result.appId = args.result.appId;
 					result.theme = args.result.theme;
 					result.appName = args.result.name;
+					result.favicon = args.result.favicon;
 					__responder.success(req, res, result);
 				}, err => {
 					__responder.error(req, res, err);
