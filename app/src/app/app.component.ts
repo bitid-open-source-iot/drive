@@ -44,8 +44,6 @@ export class AppComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		this.drawer?.open();
-
 		this.menu.events.subscribe(event => {
 			switch (event) {
 				case ('open'):
@@ -75,9 +73,7 @@ export class AppComponent implements OnInit {
 
 		this.account.authenticated.subscribe(authenticated => {
 			this.authenticated = authenticated;
-			if (authenticated) {
-				this.drawer?.open();
-			} else {
+			if (!authenticated) {
 				this.drawer?.close();
 			}
 		});
