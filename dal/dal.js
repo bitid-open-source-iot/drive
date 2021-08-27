@@ -26,6 +26,25 @@ var module = function () {
 				'metadata.bitid.auth.users.email': format.email(args.req.body.header.email)
 			};
 
+			if (typeof (args.req.body.appId) != 'undefined' && args.req.body.appId != null) {
+				if (Array.isArray(args.req.body.appId) && args.req.body.appId.length > 0) {
+					params['metadata.appId'] = {
+						$in: args.req.body.appId.filter(o => o.length == 24).map(o => o)
+					};
+				} else if (typeof (args.req.body.appId) == 'string' && args.req.body.appId.length == 24) {
+					params['metadata.appId'] = args.req.body.appId;
+				};
+			};
+			if (typeof (args.req.body.fileId) != 'undefined' && args.req.body.fileId != null) {
+				if (Array.isArray(args.req.body.fileId) && args.req.body.fileId.length > 0) {
+					params._id = {
+						$in: args.req.body.fileId.filter(o => o.length == 24).map(o => ObjectId(o))
+					};
+				} else if (typeof (args.req.body.fileId) == 'string' && args.req.body.fileId.length == 24) {
+					params._id = ObjectId(args.req.body.fileId);
+				};
+			};
+
 			var filter = {};
 			if (typeof (args.req.body.filter) != 'undefined') {
 				filter._id = 0;

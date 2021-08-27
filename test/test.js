@@ -1,12 +1,12 @@
-var Q = require('q');
-var fs = require('fs');
-var chai = require('chai');
-var fetch = require('node-fetch');
-var expect = require('chai').expect;
-var should = require('chai').should();
-var config = require('./config.json');
-var FormData = require('form-data');
-var subset = require('chai-subset');
+const Q = require('q');
+const fs = require('fs');
+const chai = require('chai');
+const fetch = require('node-fetch');
+const expect = require('chai').expect;
+const should = require('chai').should();
+const config = require('./config.json');
+const FormData = require('form-data');
+const subset = require('chai-subset');
 
 chai.use(subset);
 
@@ -40,7 +40,7 @@ describe('Config', function () {
 
 describe('Files', function () {
     it('/drive/files/upload', function (done) {
-        this.timeout(500000);
+        this.timeout(5000);
 
         tools.api.files.upload()
             .then((result) => {
@@ -268,7 +268,8 @@ var tools = {
                         'serverDate',
                         'contentType',
                         'organizationOnly'
-                    ]
+                    ],
+                    'fileId': fileId
                 });
             },
             share: () => {
