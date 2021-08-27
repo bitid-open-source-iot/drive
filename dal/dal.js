@@ -195,11 +195,20 @@ var module = function () {
 					'metadata.serverDate': new Date()
 				}
 			};
-			if (typeof (args.req.body.description) != 'undefined') {
-				update.$set['metadata.description'] = args.req.body.description;
+			if (Array.isArray(args.req.body.aliases)) {
+				update.$set.aliases = args.req.body.aliases;
 			};
-			if (typeof (args.req.body.organizationOnly) != 'undefined') {
-				update.$set['bitid.auth.organizationOnly'] = args.req.body.organizationOnly;
+			if (typeof (args.req.body.appId) != 'undefined' && args.req.body.appId != null) {
+				update.$set['metadata.appId'] = args.req.body.appId;
+			};
+			if (typeof (args.req.body.token) != 'undefined' && args.req.body.token != null) {
+				update.$set['metadata.token'] = args.req.body.token;
+			};
+			if (typeof (args.req.body.filename) != 'undefined' && args.req.body.filename != null) {
+				update.$set.filename = args.req.body.filename;
+			};
+			if (typeof (args.req.body.organizationOnly) != 'undefined' && args.req.body.organizationOnly != null) {
+				update.$set['metadata.bitid.auth.organizationOnly'] = args.req.body.organizationOnly;
 			};
 
 			db.call({
