@@ -27,6 +27,7 @@ export class ConfigService {
 			Object.keys(response.result).map(key => {
 				(environment as any)[key] = response.result[key];
 			});
+			environment.drive = response.result.drive;
 			let favicon = <HTMLLinkElement>document.getElementById('favicon');
 				favicon.href = response.result.favicon;
 			let manifest = <HTMLLinkElement>document.getElementById('manifest');
