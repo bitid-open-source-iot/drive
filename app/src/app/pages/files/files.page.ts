@@ -1,6 +1,9 @@
+import { App } from 'src/app/classes/app';
 import { File } from 'src/app/classes/file';
 import { Router } from '@angular/router';
 import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { AppsService } from 'src/app/services/apps/apps.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { FilesService } from 'src/app/services/files/files.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -11,6 +14,8 @@ import { SearchComponent } from 'src/app/libs/search/search.component';
 import { MatTableDataSource } from '@angular/material/table';
 import { OnInit, Component, OnDestroy, ViewChild } from '@angular/core';
 
+/* --- COMPONENTS --- */
+import { FilterComponent } from './filter/filter.component';
 
 @Component({
 	selector: 'files-page',
@@ -20,16 +25,36 @@ import { OnInit, Component, OnDestroy, ViewChild } from '@angular/core';
 
 export class FilesPage implements OnInit, OnDestroy {
 
-	@ViewChild(MatSort, { static: true }) private sort?: MatSort;
+	@ViewChild(MatSort, { static: true }) private sort: MatSort = new MatSort();
 	@ViewChild(MatPaginator, { static: true }) private paginator?: MatPaginator;
 	@ViewChild(SearchComponent, { static: true }) private search?: SearchComponent;
 
-	constructor(private toast: ToastService, private sheet: OptionsService, private config: ConfigService, private router: Router, private confirm: ConfirmService, private service: FilesService) { }
+	constructor(public apps: AppsService, private toast: ToastService, private sheet: OptionsService, private config: ConfigService, private router: Router, private confirm: ConfirmService, private service: FilesService, public filter: MatDialog) { }
 
-	public table: MatTableDataSource<any> = new MatTableDataSource<any>();
-	public columns: string[] = ['filename', 'size'];
+	public table: MatTableDataSource<File> = new MatTableDataSource<File>();
+	public columns: string[] = ['filename', 'size', 'appId'];
 	public loading?: boolean;
 	private observers: any = { };
+
+	private async load() {
+		this.loading = true;
+
+		const response = await this.apps.list({
+			filter: [
+				'name',
+				'icon',
+				'appId'
+			]
+		});
+
+		if (response.ok) {
+			this.apps.data = response.result.map((o: any) => new App(o));
+		} else {
+			this.apps.data = [];
+		};
+
+		this.loading = false;
+	}
 
 	private async list() {
 		this.loading = true;
@@ -56,7 +81,7 @@ export class FilesPage implements OnInit, OnDestroy {
 		}
 
 		this.loading = false;
-	};
+	}
 
 	public async options(file: File) {
 		this.sheet.show({
@@ -107,8 +132,8 @@ export class FilesPage implements OnInit, OnDestroy {
 								if (response.ok) {
 									this.toast.success('Deleted ' + file.filename + '!');
 									// this.table.data do for loop and splice correct file
-									for(let i = 0; i < this.table.data.length; i++){
-										if(this.table.data[i].fileId == file.fileId) {
+									for (let i = 0; i < this.table.data.length; i++) {
+										if (this.table.data[i].fileId == file.fileId) {
 											this.table.data.splice(i, 1);
 											break;
 										}
@@ -128,15 +153,19 @@ export class FilesPage implements OnInit, OnDestroy {
 		});
 	}
 
+	public openDialog() {
+		this.filter.open(FilterComponent)
+	}
+
 	ngOnInit(): void {
-		(this.table as any).sort = this.sort;
+		this.table.sort = this.sort;
 		(this.table as any).paginator = this.paginator;
 
-		this.observers.loaded = this.config.loaded.subscribe((loaded: boolean) => {
+		this.observers.loaded = this.config.loaded.subscribe(async (loaded: boolean) => {
 			if (loaded) {
-				this.list();
+				await this.load();
+				await this.list();
 			};
-
 		});
 
 		this.observers.search = this.search?.change.subscribe((value: string) => {

@@ -19,6 +19,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 /* --- SERVICES --- */
 import { ApiService } from './services/api/api.service';
+import { AppsService } from './services/apps/apps.service';
 import { AuthManager } from './services/auth/auth.service';
 import { MenuService } from './services/menu/menu.service';
 import { FilesService } from './services/files/files.service';
@@ -61,6 +62,7 @@ import { environment } from '../environments/environment';
     
     providers: [
         ApiService,
+        AppsService,
         AuthManager,
         MenuService,
         FilesService,
@@ -76,7 +78,7 @@ import { environment } from '../environments/environment';
         AppComponent
     ],
     declarations: [
-        AppComponent,
+        AppComponent
     ]
 })
 

@@ -2,6 +2,7 @@
 import { FilesPage } from './files.page';
 import { FilesViewerPage } from './viewer/viewer.page';
 import { FilesEditorPage } from './editor/editor.page';
+import { FilterComponent } from './filter/filter.component';
 
 /* --- MODULES --- */
 import { NgModule } from '@angular/core';
@@ -13,10 +14,12 @@ import { OptionsModule } from 'src/app/libs/options/options.module';
 import { ConfirmModule } from 'src/app/libs/confirm/confirm.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { DescribeModule } from 'src/app/pipes/describe/describe.module';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { TotalPipeModule } from 'src/app/pipes/total/total.module';
 import { MatFooterModule } from 'src/app/libs/mat-footer/mat-footer.module';
+import { MatDialogModule }  from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatContentModule } from 'src/app/libs/mat-content/mat-content.module';
@@ -54,8 +57,10 @@ const routes: Routes = [
 		MatIconModule,
 		ConfirmModule,
 		OptionsModule,
+		DescribeModule,
 		MatTableModule,
 		MatInputModule,
+		MatDialogModule,
 		MatFooterModule,
 		MatButtonModule,
 		TotalPipeModule,
@@ -64,17 +69,18 @@ const routes: Routes = [
 		MatToolbarModule,
 		MatFormFieldModule,
 		FileSizePipeModule,
+		MatPaginatorModule,
 		ReactiveFormsModule,
 		MatMenuButtonModule,
 		MatBackButtonModule,
-		MatPaginatorModule,
 		MatProgressBarModule,
 		RouterModule.forChild(routes)
 	],
 	declarations: [
 		FilesPage,
 		FilesViewerPage,
-  		FilesEditorPage
+		FilesEditorPage,
+		FilterComponent
 	]
 })
 
