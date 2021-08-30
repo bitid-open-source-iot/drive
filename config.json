@@ -9,7 +9,9 @@
             "email": "xxx",
             "appId": "000000000000000000000001"
         },
-        "client": {},
+        "client": {
+            "drive": "http://127.0.0.1:13000"
+        },
         "mongodb": {
             "url": "xxx",
             "database": "xxx"

@@ -76,7 +76,7 @@ import { environment } from '../environments/environment';
         AppComponent
     ],
     declarations: [
-        AppComponent
+        AppComponent,
     ]
 })
 

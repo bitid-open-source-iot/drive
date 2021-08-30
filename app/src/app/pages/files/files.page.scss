@@ -4,3 +4,27 @@
     z-index: 10;
     position: fixed;
 }
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    .widget {
+        width: 200px;
+        height: 200px;
+        display: flex;
+        box-shadow: 0 0 15px #E0E0E0;
+        margin-top: auto;
+        align-items: center;
+        margin-bottom: auto;
+        border-radius: 100%;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    header .widget {
+        width: 150px;
+        height: 150px;
+    }
+}

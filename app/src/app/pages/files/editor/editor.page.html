@@ -4,7 +4,7 @@
     <mat-label class="spacer">
         Editor
     </mat-label>
-    
+
     <button mat-icon-button>
         <mat-icon>
             search
@@ -12,6 +12,28 @@
     </button>
 </mat-toolbar>
 
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
 <mat-content>
-    
+    <form class="editForm" [formGroup]="form" (ngSubmit)="!loading && !form.invalid && submit()">
+        <mat-form-field appearance="outline">
+            <mat-label>
+                File Name
+            </mat-label>
+           
+            <input matInput type="text" formControlName="filename" required>
+
+            <mat-error *ngIf="errors.filename">
+                {{ errors.filename }}
+            </mat-error>
+        </mat-form-field>
+
+        <button #button type="submit" style="display: none;"></button>
+    </form>
 </mat-content>
+
+<mat-footer>
+    <button type="button" mat-flat-button color="primary" (click)="button.click()">
+        submit
+    </button>
+</mat-footer>

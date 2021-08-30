@@ -8,14 +8,30 @@
     <search placeholder="filter files..."></search>
 </mat-toolbar>
 
-<header>
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
 
+<header>
+    <div class="widget">
+        Total Files
+
+        <h1>
+            {{ table.data.length }}
+        </h1>
+    </div>
+
+    <div class="widget">
+        Total Space 
+
+        <h1> 
+            {{ table.data | total : 'size' | fileSize }} 
+        </h1>
+    </div>
 </header>
 
 <mat-content>
-    <table mat-table [dataSource]="table">
+    <table matSort mat-table [dataSource]="table">
         <ng-container matColumnDef="filename">
-            <th mat-header-cell *matHeaderCellDef>
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>
                 File Name
             </th>
             <td mat-cell *matCellDef="let element">
@@ -25,20 +41,16 @@
         </ng-container>
 
         <ng-container matColumnDef="size">
-            <th mat-header-cell *matHeaderCellDef>
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>
                 Size
             </th>
             <td mat-cell *matCellDef="let element">
                 {{ element.size | fileSize }}
             </td>
-            <td mat-footer-cell *matFooterCellDef>
-                {{ table.data | total : 'size' | fileSize }}
-            </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="columns; sticky: true;"></tr>
         <tr mat-row *matRowDef="let row; columns: columns;" (click)="options(row)"></tr>
-        <tr mat-footer-row *matFooterRowDef="columns; sticky: true;"></tr>
     </table>
 </mat-content>
 
@@ -47,3 +59,5 @@
         add
     </mat-icon>
 </button>
+
+<mat-paginator [pageSizeOptions]="[10, 25, 50, 100, 250, 500, 1000]" showFirstLastButtons></mat-paginator>

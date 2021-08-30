@@ -1,16 +1,16 @@
 export class File {
 
-    public role?: number = 0;
-    public size?: number = 0;
-    public users?: any[] = [];
-    public appId?: string;
-    public token?: string;
-    public fileId?: string;
-    public filename?: string;
-    public serverDate?: Date;
-    public uploadDate?: Date;
-    public contentType?: string;
-    public organizationOnly?: number;
+    public role: number = 0;
+    public size: number = 0;
+    public users: any[] = [];
+    public appId: string = '';
+    public token: string = '';
+    public fileId: string = '';
+    public filename: string = '';
+    public serverDate: Date = new Date();
+    public uploadDate: Date = new Date();
+    public contentType: string = '';
+    public organizationOnly: number = 0;
 
     constructor(args?: FILE) {
         if (typeof(args) != 'undefined' && args != null) {

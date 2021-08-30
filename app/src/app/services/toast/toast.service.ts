@@ -10,11 +10,15 @@ export class ToastService {
 	constructor(private snackbar: MatSnackBar) { }
 
 	public async error(message: string, duration?: number) {
-		return await this.snackbar.open(message);
+		return await this.snackbar.open(message, '', {
+			duration: duration || 3000
+		});
 	}
 
 	public async success(message: string, duration?: number) {
-		return await this.snackbar.open(message);
+		return await this.snackbar.open(message, '', {
+			duration: duration || 3000
+		});
 	}
 
 }
