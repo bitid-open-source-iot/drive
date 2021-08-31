@@ -14,6 +14,11 @@ const routes: Routes = [
         loadChildren: () => import('./pages/files/files.module').then(m => m.FilesPageModule)
     },
     {
+        path: 'subscribers',
+        canActivate: [AuthManager],
+        loadChildren: () => import('./pages/subscribers/subscribers.module').then(m => m.SubscribersPageModule)
+    },
+    {
         path: 'authenticate',
         loadChildren: () => import('./pages/authenticate/authenticate.module').then(m => m.AuthenticatePageModule)
     },

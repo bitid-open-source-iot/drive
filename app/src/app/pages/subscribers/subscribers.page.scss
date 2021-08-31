@@ -1,0 +1,16 @@
+.mat-column-role {
+    width: 200px !important;
+}
+.mat-column-owner {
+    width: 60px;
+}
+.mat-column-options {
+    width: 40px;
+    padding-right: 16px !important;
+}
+mat-list mat-list-item {
+    width: 100%;
+    mat-label {
+        margin-right: auto;
+    }
+}

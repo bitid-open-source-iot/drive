@@ -1,0 +1,96 @@
+<mat-content>
+    <table mat-table [dataSource]="table" fxShow fxHide.xs="true">
+        <ng-container matColumnDef="owner">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="changeowner(element.email)" [disabled]="role != 5 || element.role == 5">
+                    <mat-icon>
+                        vpn_key
+                    </mat-icon>
+                </button>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>
+                Email
+            </th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.email }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>
+                Role
+            </th>
+            <td mat-cell *matCellDef="let element">
+                <mat-select [(ngModel)]="element.role" (ngModelChange)="updatesubscriber(element.email, $event)"
+                    [disabled]="role < 4 || element.role >= role || element.role == 5" required>
+                    <mat-option [value]="1">
+                        Read
+                    </mat-option>
+                    <mat-option [value]="2">
+                        Write
+                    </mat-option>
+                    <mat-option [value]="3">
+                        Read/Write
+                    </mat-option>
+                    <mat-option [value]="4">
+                        Admin
+                    </mat-option>
+                    <mat-option [value]="5" disabled>
+                        Owner
+                    </mat-option>
+                </mat-select>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="options">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+                <button mat-icon-button color="warn" [disabled]="role < 4 || element.role >= role || element.role == 5"
+                    (click)="unsubscribe(element.email)">
+                    <mat-icon>
+                        delete
+                    </mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns; sticky: true;"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+
+    <mat-list fxHide fxShow.xs="true">
+        <mat-list-item lines="full" *ngFor="let element of table.data">
+            <mat-label>
+                <h3>
+                    {{ element.email }}
+                </h3>
+                <p>
+                    {{ element.role == 1 ? 'Read' : ''}}
+                    {{ element.role == 2 ? 'Write' : ''}}
+                    {{ element.role == 3 ? 'Read/Write' : ''}}
+                    {{ element.role == 4 ? 'Admin' : ''}}
+                    {{ element.role == 5 ? 'Owner' : ''}}
+                </p>
+            </mat-label>
+
+            <button mat-icon-button [disabled]="role < 4 || element.role >= role || element.role == 5"
+                (click)="editor(element)">
+                <mat-icon>
+                    edit
+                </mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" [disabled]="role < 4 || element.role >= role || element.role == 5"
+                (click)="unsubscribe(element.email)">
+                <mat-icon>
+                    delete
+                </mat-icon>
+            </button>
+        </mat-list-item>
+    </mat-list>
+</mat-content>
+
+<mat-paginator [pageSizeOptions]="[10, 25, 50, 100, 250, 500, 1000]" showFirstLastButtonsng></mat-paginator>
