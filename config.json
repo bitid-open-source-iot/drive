@@ -1,0 +1,53 @@
+{
+    "default": {
+        "limit": 50,
+        "production": true,
+        "authentication": true,
+        "auth": {
+            "host": "http://localhost:9000",
+            "token": {},
+            "email": "xxx",
+            "appId": "000000000000000000000001"
+        },
+        "client": {},
+        "logger": {
+            "appenders": {
+                "drive": {
+                    "type": "file",
+                    "backups": 10,
+                    "filename": "./logs/drive.log",
+                    "absolute": true,
+                    "maxLogSize": 102400
+                }
+            },
+            "categories": {
+                "default": {
+                    "appenders": [
+                        "drive"
+                    ],
+                    "level": "error"
+                }
+            }
+        },
+        "mongodb": {
+            "url": "xxx",
+            "database": "xxx"
+        },
+        "localwebserver": {
+            "port": 13000
+        }
+    },
+    "development": {
+        "production": false,
+        "authentication": false
+    },
+    "kubernetes": {
+        "production": true,
+        "authentication": true
+    },
+    "production": {
+        "limit": 50,
+        "production": true,
+        "authentication": true
+    }
+}
