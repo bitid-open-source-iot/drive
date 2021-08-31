@@ -83,6 +83,7 @@ mat-toolbar {
     min-height: 56px !important;
     mat-label {
         font-size: 16px;
+        margin-top: 4px;
         margin-left: 16px;
     }
 }
@@ -338,4 +339,20 @@ authenticate-page {
         }
     }
 }
-
+.filter-dialog {
+	width: 500px !important;
+	.mat-dialog-container {
+		padding: 0px !important;
+	}
+}
+@media screen and (max-width: 600px) {
+	.filter-dialog .mat-dialog-container {
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+		z-index: 5000;
+		position: fixed;
+		border-radius: 0px;
+	}
+}

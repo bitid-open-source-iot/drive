@@ -1,0 +1,37 @@
+<mat-toolbar>
+    <mat-label class="spacer">
+        Filter Files
+    </mat-label>
+
+    <button mat-icon-button (click)="close()">
+        <mat-icon>
+            close
+        </mat-icon>
+    </button>
+</mat-toolbar>
+
+<!-- <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar> -->
+
+<mat-content>
+    <form [formGroup]="form" (ngSubmit)="!loading && submit()">
+        <mat-form-field appearance="outline">
+            <mat-label>
+                Apps
+            </mat-label>
+
+            <mat-select multiple formControlName="appId">
+                <mat-option *ngFor="let o of apps.data" [value]="o.appId">
+                    {{ o.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <button #button type="submit" style="display: none;"></button>
+    </form>
+</mat-content>
+
+<mat-footer>
+    <button type="button" mat-flat-button color="primary" (click)="button.click()">
+        submit
+    </button>
+</mat-footer>

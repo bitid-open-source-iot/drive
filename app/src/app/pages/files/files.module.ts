@@ -2,7 +2,9 @@
 import { FilesPage } from './files.page';
 import { FilesViewerPage } from './viewer/viewer.page';
 import { FilesEditorPage } from './editor/editor.page';
-import { FilterComponent } from './filter/filter.component';
+
+/* --- DIALOGS --- */
+import { FilesFilterDialog } from './filter/filter.dialog';
 
 /* --- MODULES --- */
 import { NgModule } from '@angular/core';
@@ -20,6 +22,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { TotalPipeModule } from 'src/app/pipes/total/total.module';
 import { MatFooterModule } from 'src/app/libs/mat-footer/mat-footer.module';
 import { MatDialogModule }  from '@angular/material/dialog';
+import { MatRippleModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatContentModule } from 'src/app/libs/mat-content/mat-content.module';
@@ -60,12 +65,15 @@ const routes: Routes = [
 		DescribeModule,
 		MatTableModule,
 		MatInputModule,
+		MatRippleModule,
 		MatDialogModule,
+		MatSelectModule,
 		MatFooterModule,
 		MatButtonModule,
 		TotalPipeModule,
 		MatContentModule,
 		MatSidenavModule,
+		FlexLayoutModule,
 		MatToolbarModule,
 		MatFormFieldModule,
 		FileSizePipeModule,
@@ -80,7 +88,7 @@ const routes: Routes = [
 		FilesPage,
 		FilesViewerPage,
 		FilesEditorPage,
-		FilterComponent
+		FilesFilterDialog
 	]
 })
 

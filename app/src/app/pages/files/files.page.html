@@ -7,7 +7,7 @@
 
     <search placeholder="filter files..."></search>
 
-    <button mat-icon-button (click)="openDialog()">
+    <button mat-icon-button (click)="OpenFilter()">
         <mat-icon>
             filter_list
         </mat-icon>
@@ -16,26 +16,26 @@
 
 <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
 
-<header>
-    <div class="widget">
-        Total Files
-
-        <h1>
-            {{ table.data.length }}
-        </h1>
-    </div>
-
-    <div class="widget">
-        Total Space
-
-        <h1>
-            {{ table.data | total : 'size' | fileSize }}
-        </h1>
-    </div>
-</header>
-
 <mat-content>
-    <table matSort mat-table [dataSource]="table">
+    <header>
+        <div class="widget">
+            Total Files
+    
+            <h1>
+                {{ table.data.length }}
+            </h1>
+        </div>
+    
+        <div class="widget">
+            Total Space
+    
+            <h1>
+                {{ table.data | total : 'size' | fileSize }}
+            </h1>
+        </div>
+    </header>
+
+    <table matSort mat-table [dataSource]="table" fxShow fxHide.xs="true">
         <ng-container matColumnDef="filename">
             <th mat-sort-header mat-header-cell *matHeaderCellDef>
                 File Name
@@ -67,12 +67,23 @@
         <tr mat-header-row *matHeaderRowDef="columns; sticky: true;"></tr>
         <tr mat-row *matRowDef="let row; columns: columns;" (click)="options(row)"></tr>
     </table>
+
+    <mat-list fxHide fxShow.xs="true">
+        <mat-list-item lines="full" *ngFor="let element of table.data" (click)="options(element)" matRipple>
+            <h3 mat-line>
+                {{ element.filename }}
+            </h3>
+            <p mat-line>
+                {{ element.size | fileSize }}
+            </p>
+        </mat-list-item>
+    </mat-list>
 </mat-content>
 
-<button mat-fab color="primary" routerLink="editor" [queryParams]="{mode: 'add'}">
+<!-- <button mat-fab color="primary" routerLink="editor" [queryParams]="{mode: 'add'}">
     <mat-icon>
         add
     </mat-icon>
-</button>
+</button> -->
 
-<mat-paginator [pageSizeOptions]="[10, 25, 50, 100, 250, 500, 1000]" showFirstLastButtons></mat-paginator>
+<mat-paginator [pageSizeOptions]="[10, 25, 50, 100, 250, 500, 1000]" showFirstLastButtons fxShow fxHide.xs="true"></mat-paginator>

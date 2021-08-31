@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FilterComponent } from './filter.component';
+import { FilesFilterDialog } from './filter.dialog';
 
-describe('FilterComponent', () => {
-    let component: FilterComponent;
-    let fixture: ComponentFixture<FilterComponent>;
+describe('FilesFilterDialog', () => {
+    let component: FilesFilterDialog;
+    let fixture: ComponentFixture<FilesFilterDialog>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [FilterComponent]
+            declarations: [FilesFilterDialog]
         })
             .compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(FilterComponent);
+        fixture = TestBed.createComponent(FilesFilterDialog);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

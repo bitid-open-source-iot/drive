@@ -8,14 +8,15 @@ import { ToastService } from 'src/app/services/toast/toast.service';
 import { FilesService } from 'src/app/services/files/files.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { ConfigService } from 'src/app/services/config/config.service';
+import { FiltersService } from 'src/app/services/filters/filters.service';
 import { OptionsService } from 'src/app/libs/options/options.service';
 import { ConfirmService } from 'src/app/libs/confirm/confirm.service';
 import { SearchComponent } from 'src/app/libs/search/search.component';
 import { MatTableDataSource } from '@angular/material/table';
-import { OnInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { OnInit, Component, OnDestroy, ViewChild, HostListener } from '@angular/core';
 
-/* --- COMPONENTS --- */
-import { FilterComponent } from './filter/filter.component';
+/* --- DIALOGS --- */
+import { FilesFilterDialog } from './filter/filter.dialog';
 
 @Component({
 	selector: 'files-page',
@@ -29,11 +30,22 @@ export class FilesPage implements OnInit, OnDestroy {
 	@ViewChild(MatPaginator, { static: true }) private paginator?: MatPaginator;
 	@ViewChild(SearchComponent, { static: true }) private search?: SearchComponent;
 
-	constructor(public apps: AppsService, private toast: ToastService, private sheet: OptionsService, private config: ConfigService, private router: Router, private confirm: ConfirmService, private service: FilesService, public filter: MatDialog) { }
+	constructor(public apps: AppsService, private toast: ToastService, private filters: FiltersService, private sheet: OptionsService, private config: ConfigService, private dialog: MatDialog, private router: Router, private confirm: ConfirmService, private service: FilesService) { }
 
+	@HostListener('window:resize', ['$event']) resize(event: any) {
+		if (window.innerWidth <= 600) {
+			this.table.paginator = null;
+		} else {
+			(this.table as any).paginator = this.paginator;
+		};
+	}
+
+	public filter: any = this.filters.get({
+		appId: []
+	});
 	public table: MatTableDataSource<File> = new MatTableDataSource<File>();
 	public columns: string[] = ['filename', 'size', 'appId'];
-	public loading?: boolean;
+	public loading: boolean = false;
 	private observers: any = { };
 
 	private async load() {
@@ -71,7 +83,8 @@ export class FilesPage implements OnInit, OnDestroy {
 				'serverDate',
 				'contentType',
 				'organizationOnly'
-			]
+			],
+			appId: this.filter.appId
 		});
 
 		if (response.ok) {
@@ -83,24 +96,39 @@ export class FilesPage implements OnInit, OnDestroy {
 		this.loading = false;
 	}
 
+	public async OpenFilter() {
+		const dialog = await this.dialog.open(FilesFilterDialog, {
+			data: this.filter,
+			panelClass: 'filter-dialog'
+		});
+
+		await dialog.afterClosed().subscribe(async result => {
+			if (result) {
+				this.filter = result;
+				this.filters.update(result);
+				this.list();
+			};
+		});
+	}
+
 	public async options(file: File) {
 		this.sheet.show({
 			role: 0,
 			title: file.filename,
 			options: [
-				{
-					icon: 'visibility',
-					title: 'View',
-					danger: false,
-					handler: () => {
-						this.router.navigate(['/files', 'viewer'], {
-							queryParams: {
-								fileId: file.fileId
-							}
-						});
-					},
-					disabled: []
-				},
+				// {
+				// 	icon: 'visibility',
+				// 	title: 'View',
+				// 	danger: false,
+				// 	handler: () => {
+				// 		this.router.navigate(['/files', 'viewer'], {
+				// 			queryParams: {
+				// 				fileId: file.fileId
+				// 			}
+				// 		});
+				// 	},
+				// 	disabled: []
+				// },
 				{
 					icon: 'edit',
 					title: 'Edit',
@@ -153,13 +181,14 @@ export class FilesPage implements OnInit, OnDestroy {
 		});
 	}
 
-	public openDialog() {
-		this.filter.open(FilterComponent)
-	}
-
 	ngOnInit(): void {
 		this.table.sort = this.sort;
-		(this.table as any).paginator = this.paginator;
+		
+		if (window.innerWidth <= 600) {
+			this.table.paginator = null;
+		} else {
+			(this.table as any).paginator = this.paginator;
+		};
 
 		this.observers.loaded = this.config.loaded.subscribe(async (loaded: boolean) => {
 			if (loaded) {

@@ -8,6 +8,9 @@ options-sheet {
     mat-list {
         mat-list-item.danger {
             color: #f44336 !important;
+            mat-icon {
+                color: #f44336 !important;
+            }
         }
         mat-list-item.disabled {
             cursor: default !important;
