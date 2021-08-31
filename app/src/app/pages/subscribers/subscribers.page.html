@@ -1,3 +1,17 @@
+<mat-toolbar>
+    <mat-back-button></mat-back-button>
+
+    <mat-label class="spacer">
+        Subscriber
+    </mat-label>
+
+    <button mat-icon-button (click)="editor()">
+        <mat-icon>
+            add
+        </mat-icon>
+    </button>
+</mat-toolbar>
+
 <mat-content>
     <table mat-table [dataSource]="table" fxShow fxHide.xs="true">
         <ng-container matColumnDef="owner">
@@ -10,6 +24,7 @@
                 </button>
             </td>
         </ng-container>
+
         <ng-container matColumnDef="email">
             <th mat-header-cell *matHeaderCellDef>
                 Email
@@ -76,15 +91,13 @@
                 </p>
             </mat-label>
 
-            <button mat-icon-button [disabled]="role < 4 || element.role >= role || element.role == 5"
-                (click)="editor(element)">
+            <button mat-icon-button [disabled]="role < 4 || role <= element.role || element.role == 5" (click)="editor(element)">
                 <mat-icon>
                     edit
                 </mat-icon>
             </button>
 
-            <button mat-icon-button color="warn" [disabled]="role < 4 || element.role >= role || element.role == 5"
-                (click)="unsubscribe(element.email)">
+            <button mat-icon-button color="warn" [disabled]="role < 4 || element.role >= role || element.role == 5" (click)="unsubscribe(element.email)">
                 <mat-icon>
                     delete
                 </mat-icon>

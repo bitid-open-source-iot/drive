@@ -88,7 +88,7 @@ const routes: Routes = [
 		FilesPage,
 		FilesViewerPage,
 		FilesEditorPage,
-		FilesFilterDialog
+		FilesFilterDialog,
 	]
 })
 

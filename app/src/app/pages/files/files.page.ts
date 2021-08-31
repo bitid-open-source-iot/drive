@@ -113,7 +113,7 @@ export class FilesPage implements OnInit, OnDestroy {
 
 	public async options(file: File) {
 		this.sheet.show({
-			role: 0,
+			role: file.role,
 			title: file.filename,
 			options: [
 				// {
@@ -142,6 +142,21 @@ export class FilesPage implements OnInit, OnDestroy {
 						});
 					},
 					disabled: []
+				},
+				{
+					icon: 'people',
+					title: 'Manage Subscribers',
+					danger: false,
+					handler: () => {
+						this.router.navigate(['subscribers'], {
+							queryParams: {
+								id: file.fileId,
+								type: 'file'
+								// fileId: file.fileId
+							}
+						});
+					},
+					disabled: [0, 1, 2, 3]
 				},
 				{
 					icon: 'delete',

@@ -1,8 +1,10 @@
+import { User } from './user';
+
 export class File {
 
     public role: number = 0;
     public size: number = 0;
-    public users: any[] = [];
+    public users: User[] = [];
     public appId: string = '';
     public token: string = '';
     public fileId: string = '';
@@ -21,7 +23,7 @@ export class File {
                 this.size = args.size;
             }
             if (typeof (args.users) != 'undefined' && args.users != null) {
-                this.users = args.users;
+                this.users = args.users.map(o => new User(o));
             }
             if (typeof (args.appId) != 'undefined' && args.appId != null) {
                 this.appId = args.appId;
@@ -55,7 +57,7 @@ export class File {
 interface FILE {
     role?: number;
     size?: number;
-    users?: any[];
+    users?: User[];
     appId?: string;
     token?: string;
     fileId?: string;

@@ -20,6 +20,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatContentModule } from 'src/app/libs/mat-content/mat-content.module';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatBackButtonModule } from 'src/app/libs/mat-back-button/mat-back-button.module';
 import { Routes, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -50,6 +51,7 @@ const routes: Routes = [
 		MatFormFieldModule,
 		MatPaginatorModule,
 		ReactiveFormsModule,
+		MatBackButtonModule,
 		RouterModule.forChild(routes)
 	],
 	declarations: [

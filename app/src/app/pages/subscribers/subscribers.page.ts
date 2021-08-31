@@ -1,5 +1,5 @@
+import { User } from 'src/app/classes/user';
 import { MatDialog } from '@angular/material/dialog';
-import { environment } from 'src/environments/environment';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { FilesService } from 'src/app/services/files/files.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -25,18 +25,18 @@ export class SubscribersPage implements OnInit, OnDestroy {
 	constructor(private files: FilesService, private config: ConfigService, private dialog: MatDialog, private toast: ToastService, private filters: FiltersService, private route: ActivatedRoute, private confirm: ConfirmService, private settings: SettingsService) { }
 
 	public id?: string;
-	public role?: number;
-	public type?: string;
-	public table: MatTableDataSource<any> = new MatTableDataSource<any>();
+	public role: number = 0;
+	public type: string = 'none';
+	public table: MatTableDataSource<User> = new MatTableDataSource<User>();
 	public filter: any = this.filters.get({
 		page: 0,
 		search: ''
 	});
 	public columns: string[] = ['owner', 'email', 'role', 'options'];
-	public loading?: boolean;
-	private observers: any = {};
+	public loading: boolean = false;
+	private observers: any = { };
 
-	private async get() {
+	private async list() {
 		this.loading = true;
 
 		const params: any = {
@@ -46,24 +46,22 @@ export class SubscribersPage implements OnInit, OnDestroy {
 				'description'
 			]
 		};
-		let crumb: string;
 		let service: any;
 
 		switch (this.type) {
 			case ('file'):
-				crumb = 'file Subscribers',
 					service = this.files;
 				params.fileId = this.id;
 				break;
 		}
 
-		const response = await service.get(params);
+		const response = await service.list(params);
 
 		if (response.ok) {
-			this.role = response.result.role;
-			this.table.data = response.result.users;
+			this.role = parseInt(response.result.role);
+			this.table.data = response.result[0].users.map((o: any) => new User(o));
 			(this.paginator as any).pageIndex = this.filter.page;
-		
+
 		} else {
 			this.table.data = [];
 		}
@@ -91,7 +89,7 @@ export class SubscribersPage implements OnInit, OnDestroy {
 
 		if (response.ok) {
 			this.table.data.push(user);
-			this.table.data = JSON.parse(JSON.stringify(this.table.data));
+			this.table.data = this.table.data.map(o => new User(o));
 			this.toast.success('User was shared!');
 		} else {
 			this.toast.error(response.error.message);
@@ -138,9 +136,10 @@ export class SubscribersPage implements OnInit, OnDestroy {
 			for (let i = 0; i < this.table.data.length; i++) {
 				if (this.table.data[i].email == email) {
 					this.table.data.splice(i, 1);
-				}
-			}
-			this.table.data = JSON.parse(JSON.stringify(this.table.data));
+					break;
+				};
+			};
+			this.table.data = this.table.data.map(o => new User(o));
 			this.toast.success('User was removed!');
 		} else {
 			this.toast.error(response.error.message);
@@ -181,7 +180,7 @@ export class SubscribersPage implements OnInit, OnDestroy {
 						}
 					});
 					this.role = 4;
-					this.table.data = JSON.parse(JSON.stringify(this.table.data));
+					this.table.data = this.table.data.map(o => new User(o));
 					this.toast.success('Ownership was changed!');
 				} else {
 					this.toast.error(response.error.message);
@@ -232,7 +231,7 @@ export class SubscribersPage implements OnInit, OnDestroy {
 				const params = this.route.snapshot.queryParams;
 				this.id = params.id;
 				this.type = params.type;
-				this.get();
+				this.list();
 			}
 		});
 
