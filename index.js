@@ -38,6 +38,7 @@ try {
     __settings.mongodb = __settings.mongodb.replace(/xxx/g, 'drive');
     __settings.mongodb = JSON.parse(__settings.mongodb);
     __settings.auth.host = process.env.hostAuth;
+    __settings.auth.appId = process.env.hostAuthAppId;
     __settings.auth.token = JSON.parse(process.env.BITID_TOKEN);
     __settings.auth.email = process.env.BITID_EMAIL;
     console.log(JSON.stringify(__settings));
