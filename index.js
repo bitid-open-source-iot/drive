@@ -30,8 +30,6 @@ global.__settings = {
 }
 global.__responder = new responder.module();
 
-__logger.init();
-
 try {
     __settings.mssql = process.env.MSSQL;
     __settings.mongodb = process.env.mongodb;
@@ -45,6 +43,8 @@ try {
 } catch (e) {
     console.error('ERROR APPLYING ENV VARIABLES', e)
 }
+
+__logger.init();
 
 try {
     var portal = {

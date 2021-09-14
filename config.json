@@ -46,6 +46,25 @@
         "authentication": true
     },
     "production": {
+        "logger": {
+            "appenders": {
+                "drive": {
+                    "type": "file",
+                    "backups": 10,
+                    "filename": "/var/www/node/drive/logs/drive.log",
+                    "absolute": true,
+                    "maxLogSize": 102400
+                }
+            },
+            "categories": {
+                "default": {
+                    "appenders": [
+                        "drive"
+                    ],
+                    "level": "error"
+                }
+            }
+        },
         "limit": 50,
         "production": true,
         "authentication": true
