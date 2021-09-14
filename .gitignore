@@ -1,7 +1,6 @@
 .env
-tmp/*/
-tmp/*.*
-logs/*/
-logs/*.*
-node_modules/
 package-lock.json
+
+tmp/
+logs/
+node_modules/
