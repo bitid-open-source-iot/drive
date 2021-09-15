@@ -55,12 +55,12 @@ try {
                 var app = express();
                 app.use(cors());
                 app.use(express.urlencoded({
-                    'limit': '50mb',
+                    'limit': '1024mb',
                     'extended': true,
                     'parameterLimit': 50000
                 }));
                 app.use(express.json({
-                    'limit': '50mb'
+                    'limit': '1024mb'
                 }));
                 app.use(fileupload({
                     limits: {
