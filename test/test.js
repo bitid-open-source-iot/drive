@@ -5,13 +5,14 @@ const fetch = require('node-fetch');
 const expect = require('chai').expect;
 const should = require('chai').should();
 const config = require('./config.json');
-const FormData = require('form-data');
 const subset = require('chai-subset');
+const FormData = require('form-data');
 
 chai.use(subset);
 
-var token = null;
 var fileId = null;
+var zipToken = null;
+var fileToken = null;
 
 describe('Files', function () {
     it('/drive/files/add', function (done) {
@@ -20,7 +21,7 @@ describe('Files', function () {
         tools.api.files.add()
             .then((result) => {
                 try {
-                    token = result.token;
+                    fileToken = result.token;
                     fileId = result.fileId;
                     result.should.have.property('token');
                     result.should.have.property('fileId');
@@ -240,6 +241,30 @@ describe('Health Check', function () {
 
 var tools = {
     api: {
+        zips: {
+            add: () => {
+                return tools.post('/drive/zips/add', {
+                    'files': [
+                        {
+                            'token': fileToken,
+                            'fileId': fileId
+                        }
+                    ]
+                });
+            },
+            get: () => {
+                return tools.get('/drive/zips/get', {
+                    'token': zipToken,
+                    'zipId': zipId
+                });
+            },
+            delete: () => {
+                return tools.post('/drive/zips/delete', {
+                    'token': zipToken,
+                    'zipId': zipId
+                });
+            }
+        },
         files: {
             add: () => {
                 var deferred = Q.defer();
@@ -262,12 +287,9 @@ var tools = {
             },
             get: () => {
                 return tools.get('/drive/files/get', {
-                    'token': token,
+                    'token': fileToken,
                     'fileId': fileId
                 });
-            },
-            zip: () => {
-                return tools.post('/drive/files/zip', {});
             },
             list: () => {
                 return tools.post('/drive/files/list', {

@@ -98,8 +98,10 @@ try {
                     });
                 };
 
-                var files = require('./api/files');
-                app.use('/drive/files', files);
+                app.use('/drive/zips', require('./api/zips'));
+                __logger.info('Loaded: /drive/zips');
+
+                app.use('/drive/files', require('./api/files'));
                 __logger.info('Loaded: /drive/files');
 
                 app.use('/health-check', healthcheck);

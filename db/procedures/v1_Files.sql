@@ -158,12 +158,6 @@ AS
 SET NOCOUNT ON
 
 BEGIN TRY
-	-- IF NOT EXISTS (SELECT TOP 1 [id] FROM [dbo].[tblFiles])
-	-- BEGIN
-	-- 	SELECT 'No records found!' AS [message], 69 AS [code]
-	-- 	RETURN 0
-	-- END
-
 	SELECT
 		[a].[name],
 		[a].[data],

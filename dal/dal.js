@@ -6,6 +6,151 @@ const tools = require('../lib/tools');
 const ErrorResponse = require('../lib/error-response');
 
 var module = function () {
+	var dalZips = {
+		add: (args) => {
+			var deferred = Q.defer();
+
+			const request = new sql.Request(__database);
+
+			request.input('data', Buffer.from(JSON.stringify(args.req.body.files)).toString('base64'))
+			request.input('appId', args.req.body.header.appId)
+			request.input('token', tools.generateToken(32))
+			request.input('userId', args.req.body.header.userId)
+
+			request.execute('v1_Zips_Add')
+				.then(result => {
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset[0];
+						deferred.resolve(args);
+					} else {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					};
+				}, error => {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = 503;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				});
+
+			return deferred.promise;
+		},
+
+		get: (args) => {
+			var deferred = Q.defer();
+
+			var err = new ErrorResponse();
+			const transaction = new sql.Transaction(__database);
+
+			transaction.on('commit', result => {
+				deferred.resolve(args);
+			});
+
+			transaction.on('rollback', aborted => {
+				deferred.reject(err);
+			});
+
+			transaction.begin()
+				.then(res => new sql.Request(transaction).input('zipId', args.req.body.zipId).input('token', args.req.body.token).execute('v1_Zips_Get'))
+				.then(result => {
+					var deferred = Q.defer();
+
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.req.body.files = JSON.parse(Buffer.from(result.recordset[0].data, 'base64').toString())
+						deferred.resolve(args);
+					} else {
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					};
+
+					return deferred.promise;
+				}, null)
+				.then(res => {
+					var deferred = Q.defer();
+
+					const table = new sql.Table();
+					table.create = false;
+
+					table.columns.add('token', sql.VarChar(32));
+					table.columns.add('fileId', sql.Int);
+
+					args.req.body.files.map(file => table.rows.add(file.token, file.fileId));
+
+					const request = new sql.Request(__database);
+
+					request.input('files', table);
+
+					request.execute('v1_Files_Zip').then(deferred.resolve, deferred.reject);
+
+					return deferred.promise;
+				}, null)
+				.then(result => {
+					var deferred = Q.defer();
+
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset.map(o => {
+							o.data = Buffer.from(o.data, 'base64');
+							return o;
+						});
+						deferred.resolve(args);
+					} else {
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					};
+
+					return deferred.promise;
+				}, null)
+				.then(res => {
+					transaction.commit();
+				})
+				.catch(err => {
+					transaction.rollback();
+				});
+
+			return deferred.promise;
+		},
+
+		delete: (args) => {
+			var deferred = Q.defer();
+
+			const request = new sql.Request(__database);
+
+			request.input('token', args.req.body.token);
+			request.input('zipId', args.req.body.zipId);
+
+			request.execute('v1_Zips_Delete')
+				.then(result => {
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset[0];
+						deferred.resolve(args);
+					} else {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					}
+				})
+				.catch(error => {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				});
+
+			return deferred.promise;
+		}
+	};
+
 	var dalFiles = {
 		add: (args) => {
 			var deferred = Q.defer();
@@ -78,48 +223,6 @@ var module = function () {
 						err.error.errors[0].message = result.recordset[0].message;
 						deferred.reject(err);
 					}
-				})
-				.catch(error => {
-					var err = new ErrorResponse();
-					err.error.errors[0].code = error.code;
-					err.error.errors[0].reason = error.message;
-					err.error.errors[0].message = error.message;
-					deferred.reject(err);
-				});
-
-			return deferred.promise;
-		},
-
-		zip: (args) => {
-			var deferred = Q.defer();
-
-			const table = new sql.Table();
-			table.create = true;
-
-			table.columns.add('token', sql.VarChar(32));
-			table.columns.add('fileId', sql.Int);
-
-			args.req.body.files.map(file => table.rows.add(file.token, file.fileId));
-
-			const request = new sql.Request(__database);
-
-			request.input('files', table);
-
-			request.execute('v1_Files_Zip')
-				.then(result => {
-					if (result.returnValue == 1 && result.recordset.length > 0) {
-						args.result = result.recordset.map(o => {
-							o.data = Buffer.from(o.data, 'base64');
-							return o;
-						});
-						deferred.resolve(args);
-					} else {
-						var err = new ErrorResponse();
-						err.error.errors[0].code = result.recordset[0].code;
-						err.error.errors[0].reason = result.recordset[0].message;
-						err.error.errors[0].message = result.recordset[0].message;
-						deferred.reject(err);
-					};
 				})
 				.catch(error => {
 					var err = new ErrorResponse();
@@ -396,6 +499,7 @@ var module = function () {
 	};
 
 	return {
+		'zips': dalZips,
 		'files': dalFiles
 	};
 };
