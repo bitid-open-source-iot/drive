@@ -7,6 +7,7 @@
   "license": "ISC",
   "dependencies": {
     "@bitid/health-check": "^1.0.1",
+    "adm-zip": "^0.5.6",
     "atob": "^2.1.2",
     "chalk": "^4.1.0",
     "cors": "^2.8.5",

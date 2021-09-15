@@ -90,6 +90,48 @@ var module = function () {
 			return deferred.promise;
 		},
 
+		zip: (args) => {
+			var deferred = Q.defer();
+
+			const table = new sql.Table();
+			table.create = true;
+
+			table.columns.add('token', sql.VarChar(32));
+			table.columns.add('fileId', sql.Int);
+
+			args.req.body.files.map(file => table.rows.add(file.token, file.fileId));
+
+			const request = new sql.Request(__database);
+
+			request.input('files', table);
+
+			request.execute('v1_Files_Zip')
+				.then(result => {
+					if (result.returnValue == 1 && result.recordset.length > 0) {
+						args.result = result.recordset.map(o => {
+							o.data = Buffer.from(o.data, 'base64');
+							return o;
+						});
+						deferred.resolve(args);
+					} else {
+						var err = new ErrorResponse();
+						err.error.errors[0].code = result.recordset[0].code;
+						err.error.errors[0].reason = result.recordset[0].message;
+						err.error.errors[0].message = result.recordset[0].message;
+						deferred.reject(err);
+					};
+				})
+				.catch(error => {
+					var err = new ErrorResponse();
+					err.error.errors[0].code = error.code;
+					err.error.errors[0].reason = error.message;
+					err.error.errors[0].message = error.message;
+					deferred.reject(err);
+				});
+
+			return deferred.promise;
+		},
+
 		list: (args) => {
 			var deferred = Q.defer();
 

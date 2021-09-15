@@ -15,6 +15,11 @@ router.get('/get', (req, res) => {
 	myModule.files.get(req, res);
 });
 
+router.get('/zip', (req, res) => {
+	var myModule = new bll.module();
+	myModule.files.zip(req, res);
+});
+
 router.post('/list', (req, res) => {
 	var myModule = new bll.module();
 	myModule.files.list(req, res);

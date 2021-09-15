@@ -1,13 +1,14 @@
-var Q = require('q');
-var fs = require('fs');
-var chai = require('chai');
-var fetch = require('node-fetch');
-var expect = require('chai').expect;
-var should = require('chai').should();
-var config = require('./config.json');
-var FormData = require('form-data');
-var chaiSubset = require('chai-subset');
-chai.use(chaiSubset);
+const Q = require('q');
+const fs = require('fs');
+const chai = require('chai');
+const fetch = require('node-fetch');
+const expect = require('chai').expect;
+const should = require('chai').should();
+const config = require('./config.json');
+const FormData = require('form-data');
+const subset = require('chai-subset');
+
+chai.use(subset);
 
 var token = null;
 var fileId = null;
@@ -45,6 +46,25 @@ describe('Files', function () {
                     result.should.have.property('size');
                     result.should.have.property('type');
                     result.should.have.property('slice');
+                    done();
+                } catch (e) {
+                    done(e);
+                };
+            }, (err) => {
+                try {
+                    done(err);
+                } catch (e) {
+                    done(e);
+                };
+            });
+    });
+
+    it('/drive/files/zip', function (done) {
+        this.timeout(50000000);
+
+        tools.api.files.zip()
+            .then((result) => {
+                try {
                     done();
                 } catch (e) {
                     done(e);
@@ -152,7 +172,7 @@ describe('Files', function () {
     });
 
     it('/drive/files/unsubscribe', function (done) {
-        this.timeout(50005000500050005000);
+        this.timeout(5000);
 
         tools.api.files.unsubscribe()
             .then((result) => {
@@ -245,6 +265,9 @@ var tools = {
                     'token': token,
                     'fileId': fileId
                 });
+            },
+            zip: () => {
+                return tools.post('/drive/files/zip', {});
             },
             list: () => {
                 return tools.post('/drive/files/list', {
