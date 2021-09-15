@@ -60,25 +60,6 @@ describe('Files', function () {
             });
     });
 
-    it('/drive/files/zip', function (done) {
-        this.timeout(50000000);
-
-        tools.api.files.zip()
-            .then((result) => {
-                try {
-                    done();
-                } catch (e) {
-                    done(e);
-                };
-            }, (err) => {
-                try {
-                    done(err);
-                } catch (e) {
-                    done(e);
-                };
-            });
-    });
-
     it('/drive/files/list', function (done) {
         this.timeout(5000);
 
@@ -192,7 +173,56 @@ describe('Files', function () {
                 };
             });
     });
+});
 
+describe('Zips', function () {
+    it('/drive/zips/add', function (done) {
+        this.timeout(5000);
+
+        tools.api.zips.add()
+            .then((result) => {
+                try {
+                    zipId = result.zipId;
+                    zipToken = result.token;
+                    result.should.have.property('token');
+                    result.should.have.property('zipId');
+                    done();
+                } catch (e) {
+                    done(e);
+                };
+            }, (err) => {
+                try {
+                    done(err);
+                } catch (e) {
+                    done(e);
+                };
+            });
+    });
+
+    it('/drive/zips/get', function (done) {
+        this.timeout(5000);
+
+        tools.api.zips.get()
+            .then((result) => {
+                try {
+                    result.should.have.property('size');
+                    result.should.have.property('type');
+                    result.should.have.property('slice');
+                    done();
+                } catch (e) {
+                    done(e);
+                };
+            }, (err) => {
+                try {
+                    done(err);
+                } catch (e) {
+                    done(e);
+                };
+            });
+    });
+});
+
+describe('Remove Added Items', function () {
     it('/drive/files/delete', function (done) {
         this.timeout(5000);
 
