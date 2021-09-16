@@ -68,6 +68,7 @@ var module = function () {
 
 					return deferred.promise;
 				})
+				.then(myModule.zips.delete)
 				.then(null, err => {
 					__responder.error(req, res, err);
 				});
