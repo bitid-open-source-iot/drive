@@ -4,13 +4,19 @@ Set1 - CREATE TABLE tblFiles
 Set2 - CREATE TABLE tblFiles_AuditExact & Triggers
 */
 
-DROP TABLE [dbo].[tblFiles]
-DROP TABLE [dbo].[tblFiles_AuditExact]
+IF EXISTS (SELECT * FROM [sys].[objects] WHERE [name] = 'tblFiles' AND [type] = 'U')
+BEGIN
+	DROP TABLE [dbo].[tblFiles]
+END
+GO
+
+IF EXISTS (SELECT * FROM [sys].[objects] WHERE [name] = 'tblFiles_AuditExact' AND [type] = 'U')
+BEGIN
+	DROP TABLE [dbo].[tblFiles_AuditExact]
+END
+GO
 
 -- Set1
-
-USE [drive]
-GO
 
 CREATE TABLE [dbo].[tblFiles]
 (
@@ -32,9 +38,6 @@ CREATE TABLE [dbo].[tblFiles]
 -- Set2
 
 PRINT 'Executing dbo.tblFiles_AuditExact.TAB'
-GO
-
-USE [drive]
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'tblFiles_AuditExact' AND type = 'U')
@@ -182,13 +185,19 @@ Set1 - CREATE TABLE tblFilesUsers & CREATE UNIQUE INDEX
 Set2 - CREATE TABLE tblFilesUsers_AuditExact & Triggers
 */
 
--- DROP TABLE [dbo].[tblFilesUsers]
--- DROP TABLE [dbo].[tblFilesUsers_AuditExact]
+IF EXISTS (SELECT * FROM [sys].[objects] WHERE [name] = 'tblFilesUsers' AND [type] = 'U')
+BEGIN
+	DROP TABLE [dbo].[tblFilesUsers]
+END
+GO
+
+IF EXISTS (SELECT * FROM [sys].[objects] WHERE [name] = 'tblFilesUsers_AuditExact' AND [type] = 'U')
+BEGIN
+	DROP TABLE [dbo].[tblFilesUsers_AuditExact]
+END
+GO
 
 -- Set1
-
-USE [drive]
-GO
 
 CREATE TABLE [dbo].[tblFilesUsers]
 (
@@ -200,7 +209,7 @@ CREATE TABLE [dbo].[tblFilesUsers]
 	PRIMARY KEY (id)
 )
 
-CREATE UNIQUE INDEX tblFilesUsersFileIdUserId ON [dbo].[tblFilesUsers] (fileId, userId)
+CREATE UNIQUE INDEX tblFilesUsersFileIdUserId ON [dbo].[tblFilesUsers] ([fileId], [userId])
 
 -- Set1
 
@@ -209,29 +218,19 @@ CREATE UNIQUE INDEX tblFilesUsersFileIdUserId ON [dbo].[tblFilesUsers] (fileId, 
 PRINT 'Executing dbo.tblFilesUsers_AuditExact.TAB'
 GO
 
-USE [drive]
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'tblFilesUsers_AuditExact' AND type = 'U')
-BEGIN
-	CREATE TABLE [dbo].[tblFilesUsers_AuditExact]
-	(
-		[id] INT IDENTITY (1, 1) NOT NULL,
-		[userId] INT NOT NULL,
-		[idOriginal] INT NOT NULL,
-		[userAction] INT NOT NULL,
-		[dateAction] DATETIME NOT NULL CONSTRAINT DF_tblFilesUsers_AuditExact_dateAction DEFAULT GETDATE(),
-		[role] INT NOT NULL,
-		[fileId] INT NOT NULL,
-		CONSTRAINT PK_tblFilesUsers_AuditExact PRIMARY KEY CLUSTERED (ID)
-	)
-END
-GO
+CREATE TABLE [dbo].[tblFilesUsers_AuditExact]
+(
+	[id] INT IDENTITY (1, 1) NOT NULL,
+	[userId] INT NOT NULL,
+	[idOriginal] INT NOT NULL,
+	[userAction] INT NOT NULL,
+	[dateAction] DATETIME NOT NULL CONSTRAINT DF_tblFilesUsers_AuditExact_dateAction DEFAULT GETDATE(),
+	[role] INT NOT NULL,
+	[fileId] INT NOT NULL,
+	CONSTRAINT PK_tblFilesUsers_AuditExact PRIMARY KEY CLUSTERED (ID)
+)
 
 PRINT 'Executing dbo.tr_tblFilesUsers_AuditExact.TRG'
-GO
-
-USE [drive]
 GO
 
 IF EXISTS (SELECT * FROM sys.objects WHERE name = 'tr_tblFilesUsers_AuditExact' AND type = 'TR')

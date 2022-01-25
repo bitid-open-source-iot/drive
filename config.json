@@ -1,6 +1,7 @@
 {
     "default": {
         "limit": 50,
+        "mssql": "xxx",
         "production": true,
         "authentication": true,
         "auth": {

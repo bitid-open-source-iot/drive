@@ -3,13 +3,19 @@ Set1 - CREATE TABLE tblFiles
 Set2 - CREATE TABLE tblFiles_AuditExact & Triggers
 */
 
-DROP TABLE [dbo].[tblFiles]
-DROP TABLE [dbo].[tblFiles_AuditExact]
+IF EXISTS (SELECT * FROM [sys].[objects] WHERE [name] = 'tblFiles' AND [type] = 'U')
+BEGIN
+	DROP TABLE [dbo].[tblFiles]
+END
+GO
+
+IF EXISTS (SELECT * FROM [sys].[objects] WHERE [name] = 'tblFiles_AuditExact' AND [type] = 'U')
+BEGIN
+	DROP TABLE [dbo].[tblFiles_AuditExact]
+END
+GO
 
 -- Set1
-
-USE [drive]
-GO
 
 CREATE TABLE [dbo].[tblFiles]
 (
@@ -31,9 +37,6 @@ CREATE TABLE [dbo].[tblFiles]
 -- Set2
 
 PRINT 'Executing dbo.tblFiles_AuditExact.TAB'
-GO
-
-USE [drive]
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'tblFiles_AuditExact' AND type = 'U')
