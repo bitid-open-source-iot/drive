@@ -14,7 +14,7 @@ const healthcheck = require('@bitid/health-check');
 const ErrorResponse = require('./lib/error-response');
 
 dotenv.config({
-    path: path.resolve(__dirname, '.env')
+    path: path.resolve(__dirname, '.env-mssql')
 });
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -23,7 +23,6 @@ let configDefault = config.default;
 let configEnvironment = config[process.env.NODE_ENV]
 
 global.__base = __dirname + '/';
-global.__logger = require('./lib/logger');
 global.__settings = {
     ...configDefault,
     ...configEnvironment
@@ -32,19 +31,24 @@ global.__responder = new responder.module();
 
 try {
     __settings.mssql = process.env.MSSQL;
-    __settings.mongodb = process.env.mongodb;
-    __settings.mongodb = __settings.mongodb.replace(/xxx/g, 'drive');
-    __settings.mongodb = JSON.parse(__settings.mongodb);
-    __settings.auth.host = process.env.hostAuth;
-    __settings.auth.appId = process.env.hostAuthAppId;
+    __settings.auth.host = process.env.AUTH_HOST;
+    __settings.auth.appId = process.env.AUTH_APPID;
     __settings.auth.token = JSON.parse(process.env.BITID_TOKEN);
-    __settings.auth.email = process.env.BITID_EMAIL;
+    __settings.auth.email = process.env.AUTH_TOKEN;
+
+    __settings.localwebserver.port = process.env.DRIVE_PORT
+    __settings.production = true //????Clayton
+    __settings.authentication = true
+
+    __settings.limit = process.env.DRIVE_LIMIT
+
+
+
     console.log(JSON.stringify(__settings));
 } catch (e) {
     console.error('ERROR APPLYING ENV VARIABLES', e)
 }
 
-__logger.init();
 
 try {
     var portal = {
@@ -89,7 +93,7 @@ try {
                                 .then(result => {
                                     next();
                                 }, error => {
-                                    __logger.error(error);
+                                    console.error(error);
                                     __responder.error(req, res, error);
                                 });
                         } else {
@@ -99,13 +103,13 @@ try {
                 };
 
                 app.use('/drive/zips', require('./api/zips'));
-                __logger.info('Loaded: /drive/zips');
+                console.log('Loaded: /drive/zips');
 
                 app.use('/drive/files', require('./api/files'));
-                __logger.info('Loaded: /drive/files');
+                console.log('Loaded: /drive/files');
 
                 app.use('/health-check', healthcheck);
-                __logger.info('Loaded: /health-check');
+                console.log('Loaded: /health-check');
 
                 app.use((error, req, res, next) => {
                     var err = new ErrorResponse();
@@ -122,7 +126,7 @@ try {
                 deferred.resolve();
             } catch (error) {
                 deferred.reject(error);
-                __logger.error(error);
+                console.error(error);
             };
 
             return deferred.promise;
@@ -158,10 +162,10 @@ try {
                 .then(portal.database, null)
                 .then(() => {
                     console.log('Webserver Running on port: ', __settings.localwebserver.port);
-                    __logger.info('Webserver Running on port: ' + __settings.localwebserver.port);
+                    console.log('Webserver Running on port: ' + __settings.localwebserver.port);
                 }, err => {
                     console.log('Error Initializing: ', err);
-                    __logger.error('Error Initializing: ' + err);
+                    console.error('Error Initializing: ' + err);
                 });
         },
 
@@ -179,7 +183,7 @@ try {
                     deferred.resolve();
                 })
                 .catch(err => {
-                    __logger.error('Database Connection Error: ' + err);
+                    console.error('Database Connection Error: ' + err);
                     deferred.reject(err);
                     setTimeout(() => portal.database(), 5000);
                 });
