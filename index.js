@@ -30,7 +30,7 @@ global.__settings = {
 global.__responder = new responder.module();
 
 try {
-    __settings.mssql = process.env.MSSQL;
+    __settings.mssql = process.env.DRIVE_MSSQL;
     __settings.auth.host = process.env.AUTH_HOST;
     __settings.auth.appId = process.env.AUTH_APPID;
     __settings.auth.token = JSON.parse(process.env.BITID_TOKEN);
