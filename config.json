@@ -14,13 +14,11 @@
             "url": "xxx",
             "database": "xxx"
         },
-        "localwebserver": {
-            "port": 13000
-        }
+        "port": 13000
     },
     "development": {
-        "production": false,
-        "authentication": false
+        "production": true,
+        "authentication": true
     },
     "kubernetes": {
         "production": true,
