@@ -1,0 +1,56 @@
+[
+    {
+        "url": "/drive/config/get",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/config/get"
+    },
+    {
+        "url": "/drive/files/get",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/files/get"
+    },
+    {
+        "url": "/drive/files/list",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/files/list"
+    },
+    {
+        "url": "/drive/files/share",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/files/share"
+    },
+    {
+        "url": "/drive/files/upload",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/files/upload"
+    },
+    {
+        "url": "/drive/files/update",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/files/update"
+    },
+    {
+        "url": "/drive/files/delete",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/files/delete"
+    },
+    {
+        "url": "/drive/files/unsubscribe",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/files/unsubscribe"
+    },
+    {
+        "url": "/drive/files/update-subscriber",
+        "appId": "000000000000000000000000",
+        "serverDate": "2022-08-29T20:03:32.981Z",
+        "description": "/drive/files/update-subscriber"
+    }
+]

@@ -359,10 +359,12 @@ const tools = {
   put: async (url, payload) => {
     const deferred = Q.defer()
 
-    payload.header = {
-      email: config.email,
-      appId: config.appId
-    }
+    Object.assign(payload, {
+      header: {
+        email: config.email,
+        appId: config.appId
+      }
+    })
 
     payload = JSON.stringify(payload)
 
@@ -387,10 +389,12 @@ const tools = {
   post: async (url, payload) => {
     const deferred = Q.defer()
 
-    payload.header = {
-      email: config.email,
-      appId: config.appId
-    }
+    Object.assign(payload, {
+      header: {
+        email: config.email,
+        appId: config.appId
+      }
+    })
 
     payload = JSON.stringify(payload)
 
