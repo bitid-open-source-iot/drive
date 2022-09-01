@@ -83,3 +83,7 @@ For the versions available, see the [tags on this repository](https://github.com
 ## License
 
 This project is licensed under the Apache License (Version 2) - see the [LICENSE](LICENSE) file for details
+
+
+# Docker local testing
+docker run --rm --network host --name=drive --env-file /home/shane/Documents/GitCode/opensource/drive/.envDocker shanebowyer/drive:master
