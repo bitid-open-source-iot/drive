@@ -55,6 +55,19 @@ try {
           limit: '50mb'
         }))
         app.use((req, res, next) => {
+          if (req.path === '/drive/files/upload') {
+            req.originalUrl = '/drive/files/upload'
+            req.body = {
+              header: {
+                email: req.query.email,
+                appId: req.query.appId,
+                userId: req.query.userId
+              }
+            }
+          }
+          next()
+        })
+        app.use((req, res, next) => {
           req.authorization = {
             appId: [],
             userId: req.body?.header?.userId,
@@ -71,19 +84,9 @@ try {
           abortOnLimit: true
         }))
 
-        if (__settings.authentication) {
-          app.use((req, res, next) => {
+        app.use((req, res, next) => {
+          if (__settings.authentication) {
             if (req.method !== 'GET' && req.method !== 'PUT') {
-              if (req.path === '/drive/files/upload') {
-                req.originalUrl = '/drive/files/upload'
-                req.body = {
-                  header: {
-                    email: req.query.email,
-                    appId: req.query.appId,
-                    userId: req.query.userId
-                  }
-                }
-              }
               auth.authenticate({
                 req,
                 res
@@ -97,8 +100,8 @@ try {
             } else {
               next()
             }
-          })
-        }
+          }
+        })
 
         app.use('/drive/files', require('./api/files'))
         console.log('Loaded: /drive/files')

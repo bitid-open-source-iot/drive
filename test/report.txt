@@ -1,0 +1,21 @@
+
+
+  Config
+    ✔ /drive/config/get (52ms)
+
+  Files
+    ✔ /drive/files/upload (78ms)
+    ✔ /drive/files/get
+    ✔ /drive/files/list
+    ✔ /drive/files/update
+    ✔ /drive/files/share
+    ✔ /drive/files/update-subscriber
+    ✔ /drive/files/unsubscribe
+    ✔ /drive/files/delete
+
+  Health Check
+    ✔ /
+
+
+  10 passing (337ms)
+
