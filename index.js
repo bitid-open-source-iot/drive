@@ -86,7 +86,7 @@ try {
 
         app.use((req, res, next) => {
           if (__settings.authentication) {
-            if (req.method !== 'GET' && req.method !== 'PUT') {
+            if (req.method !== 'GET' && req.method !== 'PUT' && req.originalUrl != '/kubernetes') {
               auth.authenticate({
                 req,
                 res
@@ -102,6 +102,9 @@ try {
             }
           }
         })
+
+        app.use('/kubernetes', require('./api/kubernetes'));
+        console.log('Loaded ./api/kubernetes');
 
         app.use('/drive/files', require('./api/files'))
         console.log('Loaded: /drive/files')
