@@ -1,5 +1,8 @@
 name: Publish Docker Image
 
+# Runtime Node is pinned in Dockerfile to 24.22.1 (21 Oct 2026 security release).
+# This workflow only builds that image; it does not install a host Node toolchain.
+
 on:
   release:
     types:
